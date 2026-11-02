@@ -1,27 +1,35 @@
 ---
-import { Split } from '@lucide/astro';
+import { DEMO_REGISTER } from '../../content/demo-budget';
+import { formatUsd } from '../../lib/money';
+
+/** Register rows for a split (left grey rail, SPLIT badge) and a [tag] at the start of a memo. */
+const rows = DEMO_REGISTER.filter((t) => t.split || t.payee === 'Trattoria Roma');
 ---
 
-<div class="flex flex-col gap-2 text-[13px]">
-  <div class="flex items-center gap-2 rounded-lg border border-border px-3 py-2">
-    <span class="min-w-0 flex-1">
-      <span class="block font-medium">Costco</span>
-      <span class="flex items-center gap-1 text-[11px] text-muted-foreground">
-        <Split class="size-3" /> Split · Nov 12
-      </span>
-    </span>
-    <span class="font-number font-medium tabular-nums">-$214.60</span>
+<div class="overflow-hidden rounded-md border border-border text-[13px]">
+  <div class="grid h-8 grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)_4.5rem] items-center border-b border-border bg-sidebar px-2 text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
+    <span>Payee</span>
+    <span>Category</span>
+    <span class="text-right">Outflow</span>
   </div>
-  <div class="ml-4 flex flex-col border-l border-border pl-3">
-    <span class="flex items-center justify-between py-1.5">
-      <span>Groceries</span>
-      <span class="font-number tabular-nums">-$162.10</span>
-    </span>
-    <span class="flex items-center justify-between py-1.5">
-      <span class="flex items-center gap-1.5">
-        Household <span class="rounded-full bg-onsen-soft px-1.5 py-px text-[11px] text-foreground/80">#reimburse</span>
-      </span>
-      <span class="font-number tabular-nums">-$52.50</span>
-    </span>
-  </div>
+  {rows.map((t) => (
+    <div
+      class:list={[
+        'border-b border-border/70 px-2 py-1.5 last:border-0',
+        t.split && 'shadow-[inset_2px_0_0_0_var(--muted-foreground)]',
+      ]}
+    >
+      <div class="grid grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)_4.5rem] items-center">
+        <span class="truncate">{t.payee}</span>
+        <span class="flex min-w-0 items-center">
+          <span class="truncate">{t.category?.split(': ').pop()}</span>
+          {t.split && (
+            <span class="ml-1 rounded bg-border px-1 py-px text-[10px] font-medium tracking-wide uppercase">Split</span>
+          )}
+        </span>
+        <span class="text-right font-number tabular-nums">{formatUsd(t.outflow ?? 0)}</span>
+      </div>
+      {t.memo && <div class="truncate text-xs text-muted-foreground">{t.memo}</div>}
+    </div>
+  ))}
 </div>

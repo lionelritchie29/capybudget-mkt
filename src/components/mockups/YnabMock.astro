@@ -1,30 +1,33 @@
 ---
-import { Check } from '@lucide/astro';
-
-const rows = [
-  ['Accounts', '6'],
-  ['Categories', '42'],
-  ['Payees', '318'],
-  ['Transactions, with splits and transfers', '8,214'],
-  ['Months of assignments', '71'],
+/**
+ * The YNAB importer (capybudget/scripts/import-ynab.ts) is run for you during setup, not from the
+ * app, so this shows its real console output.
+ */
+const lines = [
+  ['', 'Starting YNAB import...'],
+  ['ok', 'Budget currency set to USD'],
+  ['ok', 'Imported 6 accounts'],
+  ['ok', 'Imported 9 groups and 42 categories'],
+  ['ok', 'Imported 318 payees'],
+  ['ok', 'Imported 8214 transactions'],
+  ['ok', 'Linked 412 transfer sides'],
+  ['ok', 'Imported 2130 assignments'],
+  ['done', 'Import complete!'],
 ];
 ---
 
-<div class="flex flex-col gap-2.5 text-[13px]">
-  <div class="flex items-center justify-between text-xs">
-    <span class="font-medium">Importing from YNAB</span>
-    <span class="text-success-foreground">Done</span>
+<div class="overflow-hidden rounded-md border border-border bg-[#18181b] font-mono text-[11.5px] leading-relaxed text-[#e4e4e7] dark:bg-black/40">
+  <div class="flex gap-1.5 border-b border-white/10 px-3 py-2">
+    <span class="size-2 rounded-full bg-white/20"></span>
+    <span class="size-2 rounded-full bg-white/20"></span>
+    <span class="size-2 rounded-full bg-white/20"></span>
   </div>
-  <span class="h-1.5 overflow-hidden rounded-full bg-success">
-    <span class="block h-full w-full rounded-full bg-success-foreground"></span>
-  </span>
-  <ul class="flex flex-col gap-1">
-    {rows.map(([label, count]) => (
-      <li class="flex items-center gap-2">
-        <Check class="size-3.5 text-success-foreground" />
-        <span class="flex-1 truncate">{label}</span>
-        <span class="font-number text-muted-foreground tabular-nums">{count}</span>
-      </li>
+  <div class="px-3 py-2.5">
+    {lines.map(([kind, text]) => (
+      <div class:list={['truncate', kind === 'done' && 'mt-1 font-semibold']}>
+        {kind && <span class="text-[#34d399]">✓ </span>}
+        {text}
+      </div>
     ))}
-  </ul>
+  </div>
 </div>

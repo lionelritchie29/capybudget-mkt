@@ -1,0 +1,284 @@
+---
+import {
+  ArrowLeftRight,
+  ChevronDown,
+  CircleAlert,
+  Ellipsis,
+  Lock,
+  Pencil,
+  Plus,
+  Redo2,
+  Repeat,
+  Search,
+  Undo2,
+} from '@lucide/astro';
+import { DEMO_CHECKING, DEMO_REGISTER, DEMO_UPCOMING, type DemoTransaction } from '../../content/demo-budget';
+import { formatUsd } from '../../lib/money';
+
+/**
+ * The Checking register (register-header.tsx, register-toolbar.tsx, register-table.tsx,
+ * scheduled-rows.tsx, cleared-indicator.tsx), meant for AppWindow's main area. Below 42rem it
+ * becomes the app's phone list: date headings and two-line cards.
+ */
+const money = 'font-number whitespace-nowrap tabular-nums';
+const needsCategory = DEMO_REGISTER.filter((t) => t.needsCategory).length;
+const balances = [
+  { label: 'Cleared Balance', short: 'Cleared', amount: DEMO_CHECKING.cleared },
+  { label: 'Uncleared Balance', short: 'Uncleared', amount: DEMO_CHECKING.uncleared },
+  { label: 'Working Balance', short: 'Working', amount: DEMO_CHECKING.working },
+];
+const tone = (n: number) =>
+  n > 0 ? 'text-success-foreground' : n < 0 ? 'text-danger-foreground' : 'text-muted-foreground';
+const byDate = Object.entries(
+  DEMO_REGISTER.reduce<Record<string, DemoTransaction[]>>((acc, t) => ((acc[t.date] ??= []).push(t), acc), {})
+);
+---
+
+<div class="flex flex-col gap-2 text-sm @2xl/main:gap-4">
+  <div class="flex flex-wrap items-end justify-between gap-3">
+    <div class="space-y-3">
+      <div>
+        <h1 class="truncate text-xl font-semibold tracking-tight">Checking</h1>
+        <p class="text-xs text-muted-foreground">Checking · {DEMO_CHECKING.reconciled}</p>
+      </div>
+      <div class="flex items-end gap-2 @2xl/main:gap-3">
+        {balances.map((b, i) => (
+          <>
+            {i > 0 && (
+              <span class="hidden pb-3 text-sm text-muted-foreground @2xl/main:block">{i === 1 ? '+' : '='}</span>
+            )}
+            <div>
+              <div class:list={[money, 'text-[13px] font-semibold @2xl/main:text-[15px]', tone(b.amount)]}>
+                {formatUsd(b.amount)}
+              </div>
+              <div class="text-[11px] text-muted-foreground">
+                <span class="@2xl/main:hidden">{b.short}</span>
+                <span class="hidden @2xl/main:inline">{b.label}</span>
+              </div>
+            </div>
+          </>
+        ))}
+      </div>
+    </div>
+    <div class="flex gap-2">
+      <span class="inline-flex h-7 items-center gap-1 rounded-md border border-border bg-background px-2.5 text-[0.8rem] font-medium shadow-xs">
+        <Pencil class="size-3.5" />
+        <span class="hidden @lg/main:inline">Edit account</span>
+      </span>
+      <span class="inline-flex h-7 items-center gap-1 rounded-md bg-primary px-2.5 text-[0.8rem] font-medium text-primary-foreground">
+        <Lock class="size-3.5" />
+        <span class="hidden @lg/main:inline">Reconcile</span>
+      </span>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap items-center gap-2">
+    <span class="inline-flex h-7 items-center gap-1 rounded-md bg-primary px-2.5 text-[0.8rem] font-medium text-primary-foreground">
+      <Plus class="size-3.5" /> Add<span class="hidden @lg/main:inline"> Transaction</span>
+    </span>
+    <span class="hidden h-8 items-center gap-1.5 rounded-md border border-warning-foreground/40 bg-background px-2.5 text-[0.8rem] font-medium text-warning-foreground @2xl/main:inline-flex">
+      <CircleAlert class="size-3.5" />
+      {needsCategory} needs a category
+    </span>
+    <span class="inline-flex h-7 items-center gap-1 rounded-md px-1.5 text-xs">
+      <Undo2 class="size-3.5" />
+      <span class="hidden @lg/main:inline">Undo</span>
+    </span>
+    <span class="inline-flex h-7 items-center gap-1 rounded-md px-1.5 text-xs text-muted-foreground opacity-40">
+      <Redo2 class="size-3.5" />
+      <span class="hidden @lg/main:inline">Redo</span>
+    </span>
+    <div class="ml-auto flex items-center gap-2">
+      <span class="inline-flex h-8 items-center gap-1.5 rounded-md border border-border bg-background px-2.5 shadow-xs">
+        <span class="hidden text-muted-foreground @2xl/main:inline">View:</span> This month
+        <ChevronDown class="size-4 text-muted-foreground" />
+      </span>
+      <span class="hidden h-8 w-64 items-center gap-1.5 rounded-md border border-input bg-background pr-1 pl-2 text-muted-foreground @3xl/main:flex">
+        <Search class="size-3.5" /> Search Checking
+      </span>
+    </div>
+  </div>
+
+  <!-- Desktop table -->
+  <div class="hidden overflow-hidden rounded-lg border border-border bg-background @2xl/main:block">
+    <table class="w-full table-fixed border-separate border-spacing-0 text-[13px]">
+      <colgroup>
+        <col class="w-8" />
+        <col class="w-24" />
+        <col class="w-[20%]" />
+        <col class="w-[24%]" />
+        <col />
+        <col class="w-24" />
+        <col class="w-24" />
+        <col class="w-8" />
+      </colgroup>
+      <thead class="text-[11px] text-muted-foreground">
+        <tr>
+          {['', 'Date', 'Payee', 'Category', 'Memo', 'Outflow', 'Inflow', 'C'].map((h, i) => (
+            <th
+              class:list={[
+                'h-8 border-b border-border bg-sidebar px-2 font-medium tracking-wide uppercase',
+                i >= 5 && i <= 6 && 'text-right',
+                i === 7 && 'text-center',
+                i === 1 && 'text-foreground',
+              ]}
+            >
+              {i === 0 ? <span class="block size-4 rounded-[4px] border border-input bg-background" /> : h}
+              {i === 1 && ' ↓'}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td
+            colspan="8"
+            class="h-8 border-b border-border bg-muted/80 px-2 text-[0.8125rem] font-semibold text-muted-foreground"
+          >
+            <span class="flex items-center gap-1">
+              <ChevronDown class="size-3.5" /> Upcoming transactions{' '}
+              <span class="font-normal">· {DEMO_UPCOMING.length}</span>
+            </span>
+          </td>
+        </tr>
+        {DEMO_UPCOMING.map((u) => (
+          <tr class="bg-muted/70 text-muted-foreground italic">
+            <td class="h-8 border-b border-border/70 px-2">
+              <Repeat class="size-3.5" />
+            </td>
+            <td class="h-8 truncate border-b border-border/70 px-2 tabular-nums">{u.date}</td>
+            <td class="h-8 truncate border-b border-border/70 px-2">{u.payee}</td>
+            <td class="h-8 truncate border-b border-border/70 px-2">{u.category}</td>
+            <td class="h-8 truncate border-b border-border/70 px-2" />
+            <td class:list={[money, 'h-8 border-b border-border/70 px-2 text-right']}>
+              {u.outflow ? formatUsd(u.outflow) : ''}
+            </td>
+            <td class:list={[money, 'h-8 border-b border-border/70 px-2 text-right']}>
+              {u.inflow ? formatUsd(u.inflow) : ''}
+            </td>
+            <td class="h-8 border-b border-border/70 px-2">
+              <Ellipsis class="mx-auto size-3.5" />
+            </td>
+          </tr>
+        ))}
+        {DEMO_REGISTER.map((t) => (
+          <tr
+            class:list={[
+              t.needsCategory && 'bg-warning/70',
+              t.split && 'shadow-[inset_2px_0_0_0_var(--muted-foreground)]',
+            ]}
+          >
+            <td class="h-8 border-b border-border/70 px-2">
+              <span class="block size-4 rounded-[4px] border border-input bg-background" />
+            </td>
+            <td class="h-8 truncate border-b border-border/70 px-2 tabular-nums">{t.date}</td>
+            <td class="h-8 border-b border-border/70 px-2">
+              <span class="flex min-w-0 items-center gap-1">
+                <span class="truncate">{t.payee}</span>
+                {t.transfer && <ArrowLeftRight class="ml-auto size-3.5 shrink-0 text-muted-foreground" />}
+              </span>
+            </td>
+            <td class="h-8 border-b border-border/70 px-2">
+              {t.needsCategory ? (
+                <span class="flex items-center gap-1 font-medium text-warning-foreground">
+                  <CircleAlert class="size-3.5 shrink-0" />
+                  <span class="truncate">Needs a category</span>
+                </span>
+              ) : (
+                <span class="flex min-w-0 items-center">
+                  <span class:list={['truncate', t.transfer && 'text-muted-foreground']}>{t.category}</span>
+                  {t.split && (
+                    <span class="ml-1 rounded bg-border px-1 py-px text-[10px] font-medium tracking-wide uppercase">
+                      Split
+                    </span>
+                  )}
+                </span>
+              )}
+            </td>
+            <td class="h-8 truncate border-b border-border/70 px-2 text-muted-foreground">{t.memo}</td>
+            <td class:list={[money, 'h-8 border-b border-border/70 px-2 text-right']}>
+              {t.outflow ? formatUsd(t.outflow) : ''}
+            </td>
+            <td class:list={[money, 'h-8 border-b border-border/70 px-2 text-right']}>
+              {t.inflow ? formatUsd(t.inflow) : ''}
+            </td>
+            <td class="h-8 border-b border-border/70 px-1">
+              <span class="mx-auto flex size-6 items-center justify-center">
+                {t.state === 'reconciled' ? (
+                  <Lock class="size-3.5 text-success-foreground" />
+                ) : (
+                  <span
+                    class:list={[
+                      'flex size-4 items-center justify-center rounded-full text-[10px] font-semibold',
+                      t.state === 'cleared'
+                        ? 'bg-success-foreground text-background'
+                        : 'border border-border text-muted-foreground',
+                    ]}
+                  >
+                    C
+                  </span>
+                )}
+              </span>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Phone list -->
+  <div class="-mx-4 border-t border-border @2xl/main:hidden">
+    {byDate.slice(0, 4).map(([date, rows]) => (
+      <div>
+        <div class="border-b border-border bg-sidebar px-3 py-1 text-[11px] font-medium text-muted-foreground">
+          {date}
+        </div>
+        <ul class="divide-y divide-border/70">
+          {rows.map((t) => (
+            <li class:list={['flex items-center gap-3 px-3 py-2.5', t.needsCategory && 'bg-warning/70']}>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-1.5">
+                  {t.transfer && <ArrowLeftRight class="size-3.5 shrink-0 text-muted-foreground" />}
+                  <span class="truncate font-medium">{t.payee.replace('Transfer: ', '')}</span>
+                  {t.split && (
+                    <span class="rounded bg-border px-1 py-px text-[10px] font-medium tracking-wide uppercase">
+                      Split
+                    </span>
+                  )}
+                  <span class:list={[money, 'ml-auto text-sm', t.inflow && 'text-success-foreground']}>
+                    {t.inflow ? formatUsd(t.inflow) : formatUsd(-(t.outflow ?? 0))}
+                  </span>
+                </div>
+                <div class="mt-0.5 truncate text-xs text-muted-foreground">
+                  {t.needsCategory ? (
+                    <span class="inline-flex items-center gap-1 text-warning-foreground">
+                      <CircleAlert class="size-3" /> Needs a category
+                    </span>
+                  ) : (
+                    [t.category?.split(': ').pop(), 'Checking', t.memo].filter(Boolean).join(' · ')
+                  )}
+                </div>
+              </div>
+              <span class="flex size-6 shrink-0 items-start justify-center self-start pt-0.5">
+                {t.state === 'reconciled' ? (
+                  <Lock class="size-3.5 text-success-foreground" />
+                ) : (
+                  <span
+                    class:list={[
+                      'flex size-4 items-center justify-center rounded-full text-[10px] font-semibold',
+                      t.state === 'cleared'
+                        ? 'bg-success-foreground text-background'
+                        : 'border border-border text-muted-foreground',
+                    ]}
+                  >
+                    C
+                  </span>
+                )}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </div>
+</div>

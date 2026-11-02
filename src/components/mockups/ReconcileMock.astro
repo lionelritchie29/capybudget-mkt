@@ -1,43 +1,33 @@
 ---
-import { CircleCheck, Lock } from '@lucide/astro';
+import { Lock, X } from '@lucide/astro';
+import { DEMO_CHECKING } from '../../content/demo-budget';
+import { formatUsd } from '../../lib/money';
 
-const rows = [
-  { name: 'Whole Foods', amount: '-$84.12', state: 'reconciled' },
-  { name: 'Paycheck', amount: '+$3,200.00', state: 'cleared' },
-  { name: 'Shell', amount: '-$46.30', state: 'uncleared' },
-];
+/** The "Reconcile account" dialog (account-dialogs.tsx) and the banner it leaves on the register. */
 ---
 
-<div class="flex flex-col gap-2.5 text-[13px]">
-  <div class="flex items-center justify-between rounded-lg border border-success-foreground/20 bg-success px-3 py-2">
-    <span>
-      <span class="block text-xs font-medium text-muted-foreground">Checking</span>
-      <span class="font-number font-medium text-success-foreground tabular-nums">$4,182.55</span>
-    </span>
-    <span class="flex items-center gap-1 text-xs font-medium text-success-foreground">
-      <CircleCheck class="size-3.5" /> Matches your bank
-    </span>
+<div class="flex flex-col gap-2.5 text-sm">
+  <div class="rounded-lg border border-border bg-popover p-4 shadow-md shadow-black/5">
+    <div class="font-semibold">Reconcile account</div>
+    <p class="mt-2">
+      Is your current <span class="font-semibold">Checking</span> balance{' '}
+      <span class="font-number font-semibold tabular-nums">{formatUsd(DEMO_CHECKING.cleared)}</span>?
+    </p>
+    <p class="mt-1 text-xs text-muted-foreground">
+      This is the cleared balance. Uncleared transactions aren’t included and won’t be locked.
+    </p>
+    <div class="mt-3 flex justify-end gap-2">
+      <span class="inline-flex h-7 items-center rounded-md border border-border bg-background px-2.5 text-[0.8rem] font-medium shadow-xs">
+        No
+      </span>
+      <span class="inline-flex h-7 items-center rounded-md bg-primary px-2.5 text-[0.8rem] font-medium text-primary-foreground">
+        Yes, reconcile
+      </span>
+    </div>
   </div>
-  <ul>
-    {rows.map((row) => (
-      <li class="flex items-center gap-2 border-b border-border/60 py-1.5 last:border-b-0">
-        {row.state === 'reconciled' ? (
-          <Lock class="size-3.5 text-muted-foreground" />
-        ) : (
-          <span
-            class:list={[
-              'flex size-3.5 items-center justify-center rounded-full text-[9px] font-semibold',
-              row.state === 'cleared'
-                ? 'bg-success-foreground text-background'
-                : 'border border-border text-muted-foreground',
-            ]}
-          >
-            C
-          </span>
-        )}
-        <span class="flex-1">{row.name}</span>
-        <span class="font-number tabular-nums">{row.amount}</span>
-      </li>
-    ))}
-  </ul>
+  <div class="flex items-center gap-2 rounded-md border border-border bg-sidebar px-3 py-2 text-muted-foreground">
+    <Lock class="size-3.5 text-success-foreground" />
+    <span class="flex-1">Reconciled 12 transactions.</span>
+    <X class="size-3.5" />
+  </div>
 </div>

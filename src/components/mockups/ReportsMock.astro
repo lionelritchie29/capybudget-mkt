@@ -1,45 +1,30 @@
 ---
 import { DEMO_SPENDING } from '../../content/demo-budget';
+import { donutSlices } from '../../lib/donut';
 import { formatUsd } from '../../lib/money';
 
-// Donut from stroke-dasharray segments on a circle with circumference 100.
+/** A small Spending › Breakdown: the donut (total in the middle) and the top category groups. */
+const slices = donutSlices(DEMO_SPENDING);
 const total = DEMO_SPENDING.reduce((sum, s) => sum + s.amount, 0);
-let offset = 25;
-const segments = DEMO_SPENDING.map((s) => {
-  const length = (s.amount / total) * 100;
-  const segment = { ...s, length, offset };
-  offset -= length;
-  return segment;
-});
 ---
 
-<div class="flex items-center gap-4 text-[13px]">
-  <div class="relative size-32 shrink-0">
-    <svg viewBox="0 0 42 42" class="size-full -rotate-0">
-      {segments.map((s) => (
-        <circle
-          cx="21"
-          cy="21"
-          r="15.915"
-          fill="none"
-          stroke={s.color}
-          stroke-width="5"
-          stroke-dasharray={`${Math.max(s.length - 0.6, 0.2)} ${100 - Math.max(s.length - 0.6, 0.2)}`}
-          stroke-dashoffset={s.offset}
-        />
+<div class="flex items-center gap-4 text-sm">
+  <div class="relative size-24 shrink-0">
+    <svg viewBox="0 0 100 100" class="size-full">
+      {slices.map((s) => (
+        <path d={s.d} fill={s.color} />
       ))}
     </svg>
-    <span class="absolute inset-0 flex flex-col items-center justify-center">
-      <span class="font-number text-sm font-semibold tabular-nums">{formatUsd(Math.round(total))}</span>
-      <span class="text-[10px] text-muted-foreground">spent</span>
+    <span class="absolute inset-0 flex items-center justify-center">
+      <span class="font-number text-xs font-semibold tabular-nums">{formatUsd(Math.round(total))}</span>
     </span>
   </div>
-  <ul class="flex min-w-0 flex-1 flex-col gap-1.5 text-xs">
-    {DEMO_SPENDING.slice(0, 4).map((s) => (
-      <li class="flex items-center gap-2">
-        <span class="size-2 shrink-0 rounded-full" style={`background: ${s.color}`} />
+  <ul class="flex min-w-0 flex-1 flex-col text-xs">
+    {slices.slice(0, 4).map((s) => (
+      <li class="flex items-center gap-2 border-b border-border/60 py-1.5 last:border-0">
+        <span class="size-2.5 shrink-0 rounded-[3px]" style={`background: ${s.color}`} />
         <span class="truncate">{s.name}</span>
-        <span class="ml-auto font-number text-muted-foreground tabular-nums">{formatUsd(s.amount)}</span>
+        <span class="ml-auto font-number tabular-nums">{formatUsd(Math.round(s.amount))}</span>
       </li>
     ))}
   </ul>

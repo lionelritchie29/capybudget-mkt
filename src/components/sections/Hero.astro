@@ -1,7 +1,8 @@
 ---
 import { Image } from 'astro:assets';
 import capy from '../../assets/capy-icon.png';
-import PlanMock from '../mockups/PlanMock.astro';
+import AppWindow from '../mockups/AppWindow.astro';
+import PlanScreen from '../mockups/PlanScreen.astro';
 import WaitlistForm from '../WaitlistForm.astro';
 ---
 
@@ -42,7 +43,12 @@ import WaitlistForm from '../WaitlistForm.astro';
         loading="eager"
         class="absolute -top-14 -right-2 z-10 w-20 drop-shadow-lg sm:-top-20 sm:-right-6 sm:w-30"
       />
-      <PlanMock />
+      <AppWindow
+        active="plan"
+        label="The Capybudget Plan screen for November 2026: $640 ready to assign, and Bills, Everyday and Goals categories with assigned, activity and available amounts."
+      >
+        <PlanScreen />
+      </AppWindow>
     </div>
   </div>
 </section>

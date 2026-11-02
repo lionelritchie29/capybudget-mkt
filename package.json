@@ -15,7 +15,6 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "screenshots": "node --env-file-if-exists=.env.local scripts/screenshots.ts",
     "og": "node scripts/og.ts"
   },
   "dependencies": {

@@ -1,0 +1,97 @@
+---
+import { Pencil } from '@lucide/astro';
+import AvailablePill from './AvailablePill.astro';
+import { DEMO_GROUPS, DEMO_SELECTED } from '../../content/demo-budget';
+import { formatUsd } from '../../lib/money';
+
+/**
+ * The Plan screen's right-hand panel for one selected category (budget-detail-panel.tsx,
+ * category-target.tsx, category-note.tsx): Available Balance, Target and Note cards.
+ */
+interface Props {
+  /** Only the Target and Note cards, for small tiles. */
+  compact?: boolean;
+  class?: string;
+}
+
+const { compact = false, class: className } = Astro.props;
+const category = DEMO_GROUPS.find((g) => g.name === DEMO_SELECTED.group)!.categories.find(
+  (c) => c.name === DEMO_SELECTED.name
+)!;
+const target = category.target!;
+const gap = Math.max(0, target - category.assigned);
+const progress = Math.min(1, category.assigned / target);
+const leftOver = category.available - category.assigned - category.activity;
+const card = 'rounded-lg border border-border bg-background p-3';
+---
+
+<aside class:list={['space-y-3 rounded-lg border border-border bg-sidebar p-4 text-sm', className]}>
+  {!compact && (
+    <>
+      <div class="flex items-start justify-between gap-2">
+        <div class="min-w-0">
+          <div class="truncate text-xs text-muted-foreground">{DEMO_SELECTED.group}</div>
+          <h2 class="text-base font-semibold">{category.name}</h2>
+        </div>
+        <span class="flex size-7 items-center justify-center rounded-md text-muted-foreground">
+          <Pencil class="size-4" />
+        </span>
+      </div>
+      <div class={card}>
+        <div class="mb-2 flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-sm font-semibold">Available Balance</h3>
+          <AvailablePill amount={category.available} underfunded={gap > 0} size="lg" />
+        </div>
+        <dl class="border-t border-border pt-1 text-sm">
+          <div class="flex items-baseline justify-between gap-3 py-1">
+            <dt class="text-muted-foreground">Cash Left Over From Last Month</dt>
+            <dd class="font-number tabular-nums">{formatUsd(leftOver)}</dd>
+          </div>
+          <div class="flex items-baseline justify-between gap-3 py-1">
+            <dt class="text-muted-foreground">Assigned This Month</dt>
+            <dd class="font-number tabular-nums">+{formatUsd(category.assigned)}</dd>
+          </div>
+          <div class="flex items-baseline justify-between gap-3 py-1">
+            <dt class="text-muted-foreground">Spending</dt>
+            <dd class="font-number tabular-nums">{formatUsd(category.activity)}</dd>
+          </div>
+        </dl>
+      </div>
+    </>
+  )}
+
+  <div class={card}>
+    <h3 class="mb-2 text-sm font-semibold">Target</h3>
+    <div class="space-y-2">
+      <p class="text-sm">
+        Set aside <span class="font-number font-medium">{formatUsd(target)}</span> each month
+      </p>
+      <div class="h-1.5 w-full overflow-hidden rounded-full bg-warning">
+        <div class="h-full rounded-full bg-warning-bar" style={`width: ${progress * 100}%`}></div>
+      </div>
+      <p class="text-sm text-warning-foreground">
+        <span class="font-number font-semibold">{formatUsd(gap)}</span> more needed this month
+      </p>
+      <div class="flex flex-wrap gap-2 pt-1">
+        <span class="inline-flex h-7 items-center rounded-md bg-primary px-2.5 text-[0.8rem] font-medium text-primary-foreground">
+          Assign {formatUsd(gap)}
+        </span>
+        <span class="inline-flex h-7 items-center rounded-md border border-border bg-background px-2.5 text-[0.8rem] font-medium shadow-xs">
+          Snooze for this month
+        </span>
+        {!compact && (
+          <span class="inline-flex h-7 items-center rounded-md border border-border bg-background px-2.5 text-[0.8rem] font-medium shadow-xs">
+            Edit target
+          </span>
+        )}
+      </div>
+    </div>
+  </div>
+
+  <div class={card}>
+    <h3 class="mb-2 text-sm font-semibold">Note</h3>
+    <div class="min-h-16 w-full rounded-md border border-input bg-background px-2.5 py-1.5 text-sm text-foreground shadow-xs">
+      {DEMO_SELECTED.note}
+    </div>
+  </div>
+</aside>

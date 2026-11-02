@@ -1,0 +1,115 @@
+---
+import { CalendarRange, ChevronDown, ChevronRight, List } from '@lucide/astro';
+import { DEMO_REPORT_RANGE, DEMO_SPENDING } from '../../content/demo-budget';
+import { donutSlices, formatShare } from '../../lib/donut';
+import { formatUsd } from '../../lib/money';
+
+/** Reports › Spending › Breakdown, from the app's reports-screen.tsx and spending-report.tsx. */
+const slices = donutSlices(DEMO_SPENDING);
+const total = DEMO_SPENDING.reduce((sum, s) => sum + s.amount, 0);
+const tabs = ['Spending', 'Net Worth', 'Income vs Expense'];
+---
+
+<div class="flex flex-col gap-4 text-sm">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <h1 class="text-xl font-semibold tracking-tight">Reports</h1>
+    <div class="inline-flex items-center rounded-lg bg-muted p-0.5">
+      {tabs.map((tab, i) => (
+        <span
+          class:list={[
+            'flex h-7 items-center rounded-md px-2.5 text-[13px] font-medium whitespace-nowrap',
+            i === 0 ? 'bg-background text-foreground shadow-xs' : 'text-muted-foreground',
+          ]}
+        >
+          {tab}
+        </span>
+      ))}
+    </div>
+  </div>
+
+  <div class="flex flex-wrap items-center gap-2">
+    <span class="flex h-8 items-center gap-1.5 rounded-md border border-border bg-background px-2.5 shadow-xs">
+      <CalendarRange class="size-4 text-muted-foreground" />
+      <span class="font-medium">{DEMO_REPORT_RANGE.preset}</span>
+      <span class="hidden text-muted-foreground @2xl/main:inline">· {DEMO_REPORT_RANGE.label}</span>
+      <ChevronDown class="size-4 text-muted-foreground" />
+    </span>
+    <span class="flex h-8 items-center rounded-md border border-border bg-background px-2.5 shadow-xs">
+      Accounts · 3
+    </span>
+    <span class="flex h-8 items-center rounded-md border border-border bg-background px-2.5 shadow-xs">
+      Categories · 14
+    </span>
+    <div class="ml-auto inline-flex items-center rounded-lg bg-muted p-0.5">
+      <span class="flex h-7 items-center rounded-md bg-background px-2.5 text-[13px] font-medium shadow-xs">
+        Breakdown
+      </span>
+      <span class="flex h-7 items-center rounded-md px-2.5 text-[13px] font-medium text-muted-foreground">Trends</span>
+    </div>
+  </div>
+
+  <div class="rounded-lg border border-border bg-card">
+    <div class="flex flex-wrap items-end gap-x-8 gap-y-3 border-b border-border px-4 py-3">
+      <div>
+        <div class="text-xs font-medium text-muted-foreground">Total spending</div>
+        <div class="mt-0.5 font-number text-lg font-semibold tracking-tight tabular-nums">{formatUsd(total)}</div>
+      </div>
+      <div>
+        <div class="text-xs font-medium text-muted-foreground">Monthly average</div>
+        <div class="mt-0.5 font-number text-lg font-semibold tracking-tight tabular-nums">
+          {formatUsd(total / DEMO_REPORT_RANGE.months)}
+        </div>
+      </div>
+    </div>
+    <div class="grid gap-6 p-4 @3xl/main:grid-cols-[minmax(0,220px)_minmax(0,1fr)] @3xl/main:items-start">
+      <div class="relative mx-auto aspect-square w-full max-w-[220px]">
+        <svg viewBox="0 0 100 100" class="size-full">
+          {slices.map((s) => (
+            <path d={s.d} fill={s.color} />
+          ))}
+        </svg>
+        <span class="absolute inset-0 flex items-center justify-center px-10">
+          <span class="font-number text-base font-semibold tabular-nums">{formatUsd(total)}</span>
+        </span>
+      </div>
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-border text-xs text-muted-foreground">
+            <th class="py-2 font-medium">Category group</th>
+            <th class="py-2 text-right font-medium">Amount</th>
+            <th class="hidden w-16 py-2 text-right font-medium @lg/main:table-cell">Share</th>
+            <th class="w-8"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {slices.map((s, i) => (
+            <tr class:list={['border-b border-border/60', i === 0 && 'bg-muted/60']}>
+              <td class="py-2">
+                <span class="flex min-w-0 items-center gap-2">
+                  <span class="size-2.5 shrink-0 rounded-[3px]" style={`background: ${s.color}`} />
+                  <span class="truncate">{s.name}</span>
+                  {i === 0 && <ChevronRight class="size-3.5 text-muted-foreground" />}
+                </span>
+              </td>
+              <td class="py-2 text-right font-number whitespace-nowrap tabular-nums">{formatUsd(s.amount)}</td>
+              <td class="hidden py-2 text-right text-muted-foreground tabular-nums @lg/main:table-cell">
+                {formatShare(s.share)}
+              </td>
+              <td class="py-2 text-right">
+                <List class="ml-auto size-3 text-muted-foreground" />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+        <tfoot>
+          <tr class="border-t border-border font-medium">
+            <td class="py-2">Total</td>
+            <td class="py-2 text-right font-number tabular-nums">{formatUsd(total)}</td>
+            <td class="hidden py-2 text-right tabular-nums @lg/main:table-cell">100.0%</td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+</div>

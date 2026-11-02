@@ -1,0 +1,108 @@
+---
+import { ChartColumn, ChevronRight, ChevronsUpDown, LayoutGrid, Plus, Receipt, Settings } from '@lucide/astro';
+import { Image } from 'astro:assets';
+import capy from '../../assets/capy-icon.png';
+import MockFrame from './MockFrame.astro';
+import { DEMO_ACCOUNT_SECTIONS, DEMO_BUDGET_NAME, DEMO_EMAIL } from '../../content/demo-budget';
+import { formatUsd } from '../../lib/money';
+
+/**
+ * The desktop app shell from app-shell.tsx + sidebar-accounts.tsx: a 224px sidebar (logo, budget
+ * switcher, Plan / Reports / Transactions, Cash and Tracking accounts, Settings) next to the page.
+ * The sidebar shows once the window is 56rem wide, like the app hiding it on phones.
+ */
+interface Props {
+  label: string;
+  active?: 'plan' | 'reports' | 'transactions';
+  /** Highlighted account in the sidebar (on a register). */
+  account?: string;
+  sidebar?: boolean;
+  class?: string;
+}
+
+const { label, active, account, sidebar = true, class: className } = Astro.props;
+const nav = [
+  { id: 'plan', label: 'Plan', icon: LayoutGrid },
+  { id: 'reports', label: 'Reports', icon: ChartColumn },
+  { id: 'transactions', label: 'Transactions', icon: Receipt },
+];
+const sectionTotal = (accounts: { balance: number }[]) => accounts.reduce((sum, a) => sum + a.balance, 0);
+---
+
+<MockFrame url="app.capybudget.site" label={label} class={className}>
+  <div class="@container/window">
+    <div class="flex bg-background">
+      {sidebar && (
+        <aside class="hidden w-56 shrink-0 flex-col border-r border-border bg-sidebar @4xl/window:flex">
+          <div class="flex items-center gap-1.5 pt-3 pr-2 pb-2 pl-3">
+            <Image src={capy} alt="" width={28} height={28} densities={[1, 2]} class="size-7" />
+            <span class="flex min-w-0 flex-1 items-center justify-between gap-2 rounded-md px-2 py-1.5">
+              <span class="min-w-0">
+                <span class="block truncate text-sm font-semibold">{DEMO_BUDGET_NAME}</span>
+                <span class="block truncate text-xs text-muted-foreground">{DEMO_EMAIL}</span>
+              </span>
+              <ChevronsUpDown class="size-3.5 shrink-0 text-muted-foreground" />
+            </span>
+          </div>
+          <nav class="space-y-0.5 px-3 pb-3">
+            {nav.map(({ id, label, icon: Icon }) => (
+              <span
+                class:list={[
+                  'flex h-8 items-center gap-2 rounded-md px-2 text-sm',
+                  id === active ? 'bg-muted font-medium text-foreground' : 'text-muted-foreground',
+                ]}
+              >
+                <Icon class="size-4" />
+                {label}
+              </span>
+            ))}
+          </nav>
+          <div class="flex-1 space-y-2 px-2 pb-3">
+            {DEMO_ACCOUNT_SECTIONS.map((section) => (
+              <div>
+                <span class="flex h-7 items-center gap-1 rounded-md px-1 text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
+                  <ChevronRight class="size-3.5 rotate-90" />
+                  <span class="flex-1">{section.title}</span>
+                  <span class="pr-1 font-number text-xs font-semibold tabular-nums">
+                    {formatUsd(sectionTotal(section.accounts))}
+                  </span>
+                </span>
+                <ul class="mt-0.5 space-y-px">
+                  {section.accounts.map((a) => (
+                    <li
+                      class:list={[
+                        'flex h-7 items-center gap-2 rounded-md pr-2 pl-6 text-[13px]',
+                        a.name === account ? 'bg-muted font-medium text-foreground' : 'text-foreground/80',
+                      ]}
+                    >
+                      <span class="flex min-w-0 flex-1 items-center gap-1.5">
+                        <span class="truncate">{a.name}</span>
+                        {'uncleared' in a && a.uncleared && (
+                          <span class="inline-block size-1.5 shrink-0 rounded-full bg-destructive" />
+                        )}
+                      </span>
+                      <span class="shrink-0 font-number text-xs whitespace-nowrap tabular-nums">
+                        {formatUsd(a.balance)}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+            <span class="flex h-7 items-center gap-1.5 px-2 text-[13px] text-primary">
+              <Plus class="size-3.5" /> Add Account
+            </span>
+          </div>
+          <div class="border-t border-border p-3">
+            <span class="flex h-8 items-center gap-2 rounded-md px-2 text-sm text-muted-foreground">
+              <Settings class="size-4" /> Settings
+            </span>
+          </div>
+        </aside>
+      )}
+      <div class="@container/main min-w-0 flex-1 p-4 @2xl/window:px-8 @2xl/window:py-6">
+        <slot />
+      </div>
+    </div>
+  </div>
+</MockFrame>

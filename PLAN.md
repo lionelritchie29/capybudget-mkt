@@ -7,7 +7,7 @@ Decisions so far:
 - **CTA:** join the waitlist / request access. Sign-ups stay disabled in the app; you onboard people by hand.
 - **Domain:** the marketing site takes `capybudget.site`, and the app moves to `app.capybudget.site`.
 - **v1 pages:** landing page (`/`) and a features deep-dive (`/features`).
-- **Visuals:** HTML mockups built from the app's tokens for the hero and bento, plus real screenshots (light and dark) on `/features`.
+- **Visuals:** HTML mockups only, rebuilt from the app's own components and tokens (no screenshots), so they follow light/dark and never go stale against a demo account.
 - **Currency:** mockups show USD.
 - **Claude/MCP and YNAB import:** both are advertised as features.
 - **GitHub link:** none on the site.
@@ -100,8 +100,7 @@ Brand assets: copy `public/icons/prod/*` (the caramel capybara in an onsen) into
 
 One section per feature area (Plan, Targets, Transactions/register, Scheduled, Reports, Mobile/PWA, Claude integration, Moving from YNAB). Each section has:
 
-- copy on one side and a **real screenshot** on the other, alternating sides
-- `<picture>` with light and dark variants that switch with the theme
+- copy on one side and a full-screen HTML mockup of that part of the app on the other, alternating sides
 - a sticky in-page table of contents on desktop
 
 ### Also
@@ -134,9 +133,8 @@ capybudget-mkt/
     lib/
       supabase.ts           server-only client (secret key)
       money.ts              small formatMoney port for mockups
-    assets/screenshots/{light,dark}/*.png   optimized by astro:assets
     pages/index.astro, features.astro, 404.astro, robots.txt.ts
-  scripts/screenshots.ts    Playwright capture against staging (§6)
+  scripts/og.ts             renders public/og.png from /og-image
   .github/workflows/ci.yml  lint, astro check, build
 ```
 
@@ -180,14 +178,9 @@ comment on table public.waitlist_signups is 'Marketing-site waitlist. Written by
 
 **Later:** a "you're in" email when you create their budget.
 
-## 6. Screenshots
+## 6. Mockups instead of screenshots
 
-`scripts/screenshots.ts` uses Playwright, which the app already uses:
-
-1. It signs into **staging** (`staging.capybudget.site`) with a **demo budget** you create out-of-band, with realistic fake data. The credentials come from a gitignored `.env`.
-2. It captures each screen at desktop width (1440) and in a phone frame (390), in light and dark.
-3. Output goes to `src/assets/screenshots/`, and `astro:assets` serves AVIF/WebP at responsive sizes.
-4. Re-run it with `pnpm screenshots` whenever the app UI changes.
+Every product image is HTML in `src/components/mockups/`, rebuilt from the app's real components (layout, column grids, labels, pills, icons) with the numbers in `src/content/demo-budget.ts`. They switch with the theme and need no demo account. When the app's UI changes, update the matching mockup.
 
 ## 7. Domain cutover (app → `app.capybudget.site`)
 
@@ -221,7 +214,7 @@ This happens last, after the marketing site is live on a Vercel preview URL. Ste
    - first Vercel preview deploy linked to the GitHub repo
 2. **Landing page:** all sections from §3 with HTML mockups. Copy drafted; you edit the voice.
 3. **Waitlist:** the migration in the app repo (you apply it), the action, the form states, the Resend confirmation email, env vars on Vercel.
-4. **`/features`:** the screenshot script, demo-budget captures, and the alternating sections.
+4. **`/features`:** full-screen mockups of each area, and the alternating sections.
 5. **Polish:**
    - OG image, sitemap, JSON-LD
    - 404
@@ -242,4 +235,3 @@ This happens last, after the marketing site is live on a Vercel preview URL. Ste
 
 - Create a Resend account and verify `capybudget.site` (DNS records), then add `RESEND_API_KEY` to Vercel.
 - Apply the `waitlist_signups` migration.
-- Create the demo budget on staging for screenshots.

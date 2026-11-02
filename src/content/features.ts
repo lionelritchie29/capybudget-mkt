@@ -1,6 +1,5 @@
 /**
  * Feature copy, shared by the home page bento (title + blurb) and /features (everything).
- * `screenshot` names the files scripts/screenshots.ts writes to src/assets/screenshots/{light,dark}/.
  */
 export type Feature = {
   id: string;
@@ -9,7 +8,6 @@ export type Feature = {
   heading: string;
   body: string;
   points: string[];
-  screenshot?: string;
 };
 
 export const FEATURES: Feature[] = [
@@ -25,7 +23,6 @@ export const FEATURES: Feature[] = [
       'Filter to just the underfunded or overspent categories',
       'Overspending stays in its category until you cover it, never quietly eating next month',
     ],
-    screenshot: 'plan',
   },
   {
     id: 'targets',
@@ -40,7 +37,6 @@ export const FEATURES: Feature[] = [
       'Notes on any category, for the "why" behind the number',
       'Assign to all underfunded categories at once',
     ],
-    screenshot: 'targets',
   },
   {
     id: 'transactions',
@@ -50,11 +46,10 @@ export const FEATURES: Feature[] = [
     body: 'Enter transactions as quickly as you can type. Payees, categories and dates autocomplete, and bulk edits take a single selection.',
     points: [
       'Split a transaction across as many categories as you need',
-      'Tags in memos, with counts, for trips, projects or reimbursements',
+      'Tag a memo with [trip], [work] or [reimburse] and search by it later',
       'Search, date ranges and bulk recategorize',
       'Transfers between accounts post both sides for you',
     ],
-    screenshot: 'transactions',
   },
   {
     id: 'scheduled',
@@ -80,7 +75,6 @@ export const FEATURES: Feature[] = [
       'Net worth over time',
       'Filter by account, category and date range',
     ],
-    screenshot: 'reports',
   },
   {
     id: 'reconcile',
@@ -109,9 +103,9 @@ export const FEATURES: Feature[] = [
   {
     id: 'ynab',
     title: 'Coming from YNAB?',
-    blurb: 'Bring your accounts, categories, payees and full transaction history with you.',
+    blurb: 'We bring your accounts, categories, payees and full transaction history across when we set you up.',
     heading: 'Bring your YNAB history',
-    body: 'Capybudget speaks envelope budgeting natively, so your YNAB budget comes across as-is: accounts, category groups, payees, every transaction and every month of assignments.',
+    body: 'Capybudget speaks envelope budgeting natively, so your YNAB budget comes across as-is. When your spot opens, we run the import for you: accounts, category groups, payees, every transaction and every month of assignments.',
     points: [
       'Full history, not just balances',
       'Splits and transfers preserved',
@@ -129,7 +123,6 @@ export const FEATURES: Feature[] = [
       'Phone-sized controls and 44px tap targets',
       'Light and dark, following your system',
     ],
-    screenshot: 'mobile',
   },
   {
     id: 'claude',
