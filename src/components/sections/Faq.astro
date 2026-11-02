@@ -1,47 +1,15 @@
 ---
 import { Plus } from '@lucide/astro';
 import SectionHeading from '../SectionHeading.astro';
+import { useI18n } from '../../i18n';
 
-const faqs = [
-  {
-    q: 'What is envelope budgeting?',
-    a: 'You split the money you have into categories ("envelopes") before you spend it. When an envelope is empty, you either stop spending or move money from another one. Capybudget does the bookkeeping so the envelopes are always right.',
-  },
-  {
-    q: 'How do I get access?',
-    a: "Join the waitlist. We're letting people in a few at a time and will email you when your budget is set up. Joining is free and takes one email address.",
-  },
-  {
-    q: 'Does it connect to my bank?',
-    a: 'Not yet. You add transactions yourself (it is fast, and many people find that is what keeps them honest), set up scheduled ones for anything recurring, or ask Claude to enter them for you.',
-  },
-  {
-    q: 'I use YNAB. Can I bring my budget?',
-    a: 'Yes. Your accounts, category groups, payees, every transaction (with splits and transfers) and every month of assignments come across. One difference: Capybudget has no credit card accounts or payment categories, by design.',
-  },
-  {
-    q: 'Why no credit cards?',
-    a: 'Credit card handling is where envelope budgets get confusing. Capybudget keeps to cash, checking, savings and tracking accounts, and overspending stays in its own category until you cover it.',
-  },
-  {
-    q: 'Which currencies are supported?',
-    a: "Each budget has its own currency, including zero-decimal ones like the Indonesian rupiah and Japanese yen, and its own time zone, so the month rolls over on your calendar, not a server's.",
-  },
-  {
-    q: 'Is there a phone app?',
-    a: 'Capybudget is a web app you can add to your home screen on iOS and Android. It runs full screen, with phone-sized controls and swipe back, so it feels like an app because it is one.',
-  },
-  {
-    q: 'How does the Claude integration work?',
-    a: 'Capybudget includes an MCP server. Add it to Claude.ai or Claude Code and Claude can read your budget, add transactions, move money and more. Deleting, bulk edits and reconciling always ask for your approval first.',
-  },
-];
+const { t } = useI18n(Astro);
 ---
 
 <section id="faq" class="mx-auto max-w-3xl px-4 py-20 sm:px-6 sm:py-28">
-  <SectionHeading eyebrow="FAQ" title="Questions, answered calmly" />
+  <SectionHeading eyebrow={t.faq.eyebrow} title={t.faq.title} />
   <div class="reveal mt-12 divide-y divide-border border-y border-border">
-    {faqs.map(({ q, a }) => (
+    {t.faq.items.map(({ q, a }) => (
       <details class="group">
         <summary class="flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-left font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
           {q}

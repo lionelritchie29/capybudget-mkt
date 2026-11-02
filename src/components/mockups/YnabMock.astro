@@ -1,11 +1,14 @@
 ---
+import { useI18n } from '../../i18n';
+
 /**
  * The YNAB importer (capybudget/scripts/import-ynab.ts) is run for you during setup, not from the
- * app, so this shows its real console output.
+ * app, so this shows its real console output, which is English on every page.
  */
+const { demo } = useI18n(Astro);
 const lines = [
   ['', 'Starting YNAB import...'],
-  ['ok', 'Budget currency set to USD'],
+  ['ok', `Budget currency set to ${demo.currency}`],
   ['ok', 'Imported 6 accounts'],
   ['ok', 'Imported 9 groups and 42 categories'],
   ['ok', 'Imported 318 payees'],

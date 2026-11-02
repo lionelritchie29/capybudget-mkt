@@ -1,22 +1,22 @@
 ---
 import { ChevronDown, Repeat } from '@lucide/astro';
-import { DEMO_UPCOMING } from '../../content/demo-budget';
-import { formatUsd } from '../../lib/money';
+import { useI18n } from '../../i18n';
 
 /** The register's "Upcoming transactions" section (scheduled-rows.tsx): muted italic rows with a Repeat icon. */
+const { t, demo, money } = useI18n(Astro);
 ---
 
 <div class="overflow-hidden rounded-md border border-border text-[13px]">
   <div class="flex h-8 items-center gap-1 bg-muted/80 px-2 text-[0.8125rem] font-semibold text-muted-foreground">
-    <ChevronDown class="size-3.5" /> Upcoming transactions <span class="font-normal">· {DEMO_UPCOMING.length}</span>
+    <ChevronDown class="size-3.5" /> {t.app.register.upcoming} <span class="font-normal">· {demo.upcoming.length}</span>
   </div>
   <ul>
-    {DEMO_UPCOMING.map((u) => (
+    {demo.upcoming.map((u) => (
       <li class="flex h-8 items-center gap-2 border-t border-border/70 bg-muted/70 px-2 text-muted-foreground italic">
         <Repeat class="size-3.5 shrink-0" />
         <span class="w-[4.6rem] shrink-0 tabular-nums">{u.date}</span>
         <span class="min-w-0 flex-1 truncate">{u.payee}</span>
-        <span class="font-number whitespace-nowrap tabular-nums">{formatUsd(u.outflow ?? u.inflow ?? 0)}</span>
+        <span class="font-number whitespace-nowrap tabular-nums">{money(u.outflow ?? u.inflow ?? 0)}</span>
       </li>
     ))}
   </ul>

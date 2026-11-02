@@ -1,11 +1,11 @@
 ---
-import { DEMO_SPENDING } from '../../content/demo-budget';
 import { donutSlices } from '../../lib/donut';
-import { formatUsd } from '../../lib/money';
+import { useI18n } from '../../i18n';
 
 /** A small Spending › Breakdown: the donut (total in the middle) and the top category groups. */
-const slices = donutSlices(DEMO_SPENDING);
-const total = DEMO_SPENDING.reduce((sum, s) => sum + s.amount, 0);
+const { demo, money } = useI18n(Astro);
+const slices = donutSlices(demo.spending);
+const total = demo.spending.reduce((sum, s) => sum + s.amount, 0);
 ---
 
 <div class="flex items-center gap-4 text-sm">
@@ -16,7 +16,7 @@ const total = DEMO_SPENDING.reduce((sum, s) => sum + s.amount, 0);
       ))}
     </svg>
     <span class="absolute inset-0 flex items-center justify-center">
-      <span class="font-number text-xs font-semibold tabular-nums">{formatUsd(Math.round(total))}</span>
+      <span class="font-number text-xs font-semibold tabular-nums">{money(Math.round(total))}</span>
     </span>
   </div>
   <ul class="flex min-w-0 flex-1 flex-col text-xs">
@@ -24,7 +24,7 @@ const total = DEMO_SPENDING.reduce((sum, s) => sum + s.amount, 0);
       <li class="flex items-center gap-2 border-b border-border/60 py-1.5 last:border-0">
         <span class="size-2.5 shrink-0 rounded-[3px]" style={`background: ${s.color}`} />
         <span class="truncate">{s.name}</span>
-        <span class="ml-auto font-number tabular-nums">{formatUsd(Math.round(s.amount))}</span>
+        <span class="ml-auto font-number tabular-nums">{money(Math.round(s.amount))}</span>
       </li>
     ))}
   </ul>

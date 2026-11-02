@@ -3,8 +3,7 @@ import { ChartColumn, ChevronRight, ChevronsUpDown, LayoutGrid, Plus, Receipt, S
 import { Image } from 'astro:assets';
 import capy from '../../assets/capy-icon.png';
 import MockFrame from './MockFrame.astro';
-import { DEMO_ACCOUNT_SECTIONS, DEMO_BUDGET_NAME, DEMO_EMAIL } from '../../content/demo-budget';
-import { formatUsd } from '../../lib/money';
+import { useI18n } from '../../i18n';
 
 /**
  * The desktop app shell from app-shell.tsx + sidebar-accounts.tsx: a 224px sidebar (logo, budget
@@ -21,10 +20,11 @@ interface Props {
 }
 
 const { label, active, account, sidebar = true, class: className } = Astro.props;
+const { t, demo, money } = useI18n(Astro);
 const nav = [
-  { id: 'plan', label: 'Plan', icon: LayoutGrid },
-  { id: 'reports', label: 'Reports', icon: ChartColumn },
-  { id: 'transactions', label: 'Transactions', icon: Receipt },
+  { id: 'plan', label: t.app.nav.plan, icon: LayoutGrid },
+  { id: 'reports', label: t.app.nav.reports, icon: ChartColumn },
+  { id: 'transactions', label: t.app.nav.transactions, icon: Receipt },
 ];
 const sectionTotal = (accounts: { balance: number }[]) => accounts.reduce((sum, a) => sum + a.balance, 0);
 ---
@@ -38,8 +38,8 @@ const sectionTotal = (accounts: { balance: number }[]) => accounts.reduce((sum, 
             <Image src={capy} alt="" width={28} height={28} densities={[1, 2]} class="size-7" />
             <span class="flex min-w-0 flex-1 items-center justify-between gap-2 rounded-md px-2 py-1.5">
               <span class="min-w-0">
-                <span class="block truncate text-sm font-semibold">{DEMO_BUDGET_NAME}</span>
-                <span class="block truncate text-xs text-muted-foreground">{DEMO_EMAIL}</span>
+                <span class="block truncate text-sm font-semibold">{demo.name}</span>
+                <span class="block truncate text-xs text-muted-foreground">{demo.email}</span>
               </span>
               <ChevronsUpDown class="size-3.5 shrink-0 text-muted-foreground" />
             </span>
@@ -58,13 +58,13 @@ const sectionTotal = (accounts: { balance: number }[]) => accounts.reduce((sum, 
             ))}
           </nav>
           <div class="flex-1 space-y-2 px-2 pb-3">
-            {DEMO_ACCOUNT_SECTIONS.map((section) => (
+            {demo.accountSections.map((section) => (
               <div>
                 <span class="flex h-7 items-center gap-1 rounded-md px-1 text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
                   <ChevronRight class="size-3.5 rotate-90" />
                   <span class="flex-1">{section.title}</span>
                   <span class="pr-1 font-number text-xs font-semibold tabular-nums">
-                    {formatUsd(sectionTotal(section.accounts))}
+                    {money(sectionTotal(section.accounts))}
                   </span>
                 </span>
                 <ul class="mt-0.5 space-y-px">
@@ -77,12 +77,10 @@ const sectionTotal = (accounts: { balance: number }[]) => accounts.reduce((sum, 
                     >
                       <span class="flex min-w-0 flex-1 items-center gap-1.5">
                         <span class="truncate">{a.name}</span>
-                        {'uncleared' in a && a.uncleared && (
-                          <span class="inline-block size-1.5 shrink-0 rounded-full bg-destructive" />
-                        )}
+                        {a.uncleared && <span class="inline-block size-1.5 shrink-0 rounded-full bg-destructive" />}
                       </span>
                       <span class="shrink-0 font-number text-xs whitespace-nowrap tabular-nums">
-                        {formatUsd(a.balance)}
+                        {money(a.balance)}
                       </span>
                     </li>
                   ))}
@@ -90,12 +88,12 @@ const sectionTotal = (accounts: { balance: number }[]) => accounts.reduce((sum, 
               </div>
             ))}
             <span class="flex h-7 items-center gap-1.5 px-2 text-[13px] text-primary">
-              <Plus class="size-3.5" /> Add Account
+              <Plus class="size-3.5" /> {t.app.addAccount}
             </span>
           </div>
           <div class="border-t border-border p-3">
             <span class="flex h-8 items-center gap-2 rounded-md px-2 text-sm text-muted-foreground">
-              <Settings class="size-4" /> Settings
+              <Settings class="size-4" /> {t.app.nav.settings}
             </span>
           </div>
         </aside>

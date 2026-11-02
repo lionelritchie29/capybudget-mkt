@@ -1,33 +1,35 @@
 ---
 import { Lock, X } from '@lucide/astro';
-import { DEMO_CHECKING } from '../../content/demo-budget';
-import { formatUsd } from '../../lib/money';
+import { useI18n } from '../../i18n';
 
 /** The "Reconcile account" dialog (account-dialogs.tsx) and the banner it leaves on the register. */
+const { t, demo, money } = useI18n(Astro);
+const copy = t.app.reconcile;
 ---
 
 <div class="flex flex-col gap-2.5 text-sm">
   <div class="rounded-lg border border-border bg-popover p-4 shadow-md shadow-black/5">
-    <div class="font-semibold">Reconcile account</div>
+    <div class="font-semibold">{copy.title}</div>
     <p class="mt-2">
-      Is your current <span class="font-semibold">Checking</span> balance{' '}
-      <span class="font-number font-semibold tabular-nums">{formatUsd(DEMO_CHECKING.cleared)}</span>?
+      {copy.question.before}
+      <span class="font-semibold">{demo.registerAccount.name}</span>
+      {copy.question.middle}
+      <span class="font-number font-semibold tabular-nums">{money(demo.balances.cleared)}</span>
+      {copy.question.after}
     </p>
-    <p class="mt-1 text-xs text-muted-foreground">
-      This is the cleared balance. Uncleared transactions aren’t included and won’t be locked.
-    </p>
+    <p class="mt-1 text-xs text-muted-foreground">{copy.hint}</p>
     <div class="mt-3 flex justify-end gap-2">
       <span class="inline-flex h-7 items-center rounded-md border border-border bg-background px-2.5 text-[0.8rem] font-medium shadow-xs">
-        No
+        {copy.no}
       </span>
       <span class="inline-flex h-7 items-center rounded-md bg-primary px-2.5 text-[0.8rem] font-medium text-primary-foreground">
-        Yes, reconcile
+        {copy.yes}
       </span>
     </div>
   </div>
   <div class="flex items-center gap-2 rounded-md border border-border bg-sidebar px-3 py-2 text-muted-foreground">
     <Lock class="size-3.5 text-success-foreground" />
-    <span class="flex-1">Reconciled 12 transactions.</span>
+    <span class="flex-1">{copy.done(12)}</span>
     <X class="size-3.5" />
   </div>
 </div>

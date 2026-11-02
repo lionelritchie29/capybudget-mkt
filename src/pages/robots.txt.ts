@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 
 export const GET: APIRoute = ({ site }) =>
-  new Response(`User-agent: *\nAllow: /\nDisallow: /waitlist\n\nSitemap: ${new URL('sitemap-index.xml', site)}\n`, {
-    headers: { 'Content-Type': 'text/plain; charset=utf-8' },
-  });
+  new Response(
+    `User-agent: *\nAllow: /\nDisallow: /waitlist\nDisallow: /id/waitlist\n\nSitemap: ${new URL('sitemap-index.xml', site)}\n`,
+    { headers: { 'Content-Type': 'text/plain; charset=utf-8' } }
+  );

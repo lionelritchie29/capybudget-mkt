@@ -1,26 +1,31 @@
+import { ui } from '../i18n';
+import { DEFAULT_LOCALE, type Locale } from '../i18n/config';
+
 const SITE = 'https://capybudget.site';
 
 /**
  * Plain table layout with inline styles, so it holds up in Gmail, Outlook and Apple Mail.
  * Colours are the light theme's (email clients mostly ignore dark-mode CSS); caramel is the only accent.
  */
-export function confirmationEmail(): { subject: string; html: string; text: string } {
-  const subject = "You're on the Capybudget waitlist";
+export function confirmationEmail(locale: Locale): { subject: string; html: string; text: string } {
+  const copy = ui[locale].email;
+  const { subject } = copy;
+  const home = locale === DEFAULT_LOCALE ? SITE : `${SITE}/${locale}`;
 
   const text = [
-    "You're on the list.",
+    copy.heading,
     '',
-    "Thanks for joining the Capybudget waitlist. We're letting people in a few at a time, and we'll email you when your budget is ready.",
+    copy.body,
     '',
-    'Until then: give every dollar a job, and take a long soak.',
+    copy.textSignoff,
     '',
-    `Capybudget · ${SITE}`,
+    `Capybudget · ${home}`,
     '',
-    "You're getting this because this address was entered on capybudget.site. If that wasn't you, ignore this email and you won't hear from us again.",
+    copy.footer('capybudget.site'),
   ].join('\n');
 
   const html = `<!doctype html>
-<html lang="en">
+<html lang="${locale}">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -39,12 +44,12 @@ export function confirmationEmail(): { subject: string; html: string; text: stri
             </tr>
             <tr>
               <td style="padding:16px 32px 0;">
-                <h1 style="margin:0;font-size:22px;line-height:1.3;font-weight:600;letter-spacing:-0.01em;">You're on the list.</h1>
+                <h1 style="margin:0;font-size:22px;line-height:1.3;font-weight:600;letter-spacing:-0.01em;">${copy.heading}</h1>
               </td>
             </tr>
             <tr>
               <td style="padding:12px 32px 0;font-size:15px;line-height:1.6;color:#3f3f46;">
-                Thanks for joining the Capybudget waitlist. We're letting people in a few at a time, and we'll email you when your budget is ready.
+                ${copy.body}
               </td>
             </tr>
             <tr>
@@ -52,8 +57,8 @@ export function confirmationEmail(): { subject: string; html: string; text: stri
                 <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;border-radius:8px;background:#d1fae5;border:1px solid rgba(6,95,70,0.2);">
                   <tr>
                     <td style="padding:12px 16px;">
-                      <div style="font-size:18px;font-weight:500;color:#065f46;font-variant-numeric:tabular-nums;">$0.00</div>
-                      <div style="font-size:12px;font-weight:500;color:#71717a;">Ready to Assign · every dollar has a job</div>
+                      <div style="font-size:18px;font-weight:500;color:#065f46;font-variant-numeric:tabular-nums;">${copy.readyAmount}</div>
+                      <div style="font-size:12px;font-weight:500;color:#71717a;">${copy.readyCaption}</div>
                     </td>
                   </tr>
                 </table>
@@ -61,13 +66,13 @@ export function confirmationEmail(): { subject: string; html: string; text: stri
             </tr>
             <tr>
               <td style="padding:20px 32px 32px;font-size:15px;line-height:1.6;color:#3f3f46;">
-                Until then: take a long soak.<br />
-                <span style="color:#d4895a;font-weight:600;">The Capybudget capybara</span>
+                ${copy.htmlSignoff}<br />
+                <span style="color:#d4895a;font-weight:600;">${copy.signature}</span>
               </td>
             </tr>
           </table>
           <p style="max-width:480px;margin:16px auto 0;font-size:12px;line-height:1.5;color:#71717a;">
-            You're getting this because this address was entered on <a href="${SITE}" style="color:#71717a;">capybudget.site</a>. If that wasn't you, ignore this email and you won't hear from us again.
+            ${copy.footer(`<a href="${home}" style="color:#71717a;">capybudget.site</a>`)}
           </p>
         </td>
       </tr>

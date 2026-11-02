@@ -3,8 +3,10 @@ import { Check } from '@lucide/astro';
 import SectionHeading from '../SectionHeading.astro';
 import ChatMock from '../mockups/ChatMock.astro';
 import { feature } from '../../content/features';
+import { useI18n } from '../../i18n';
 
-const { heading, body, points } = feature('claude');
+const { locale, t } = useI18n(Astro);
+const { heading, body, points } = feature(locale, 'claude');
 ---
 
 <section class="border-y border-border bg-sidebar/60">
@@ -13,7 +15,7 @@ const { heading, body, points } = feature('claude');
       <ChatMock />
     </div>
     <div class="flex flex-col gap-6">
-      <SectionHeading eyebrow="Works with Claude" title={heading} align="left">
+      <SectionHeading eyebrow={t.claude.eyebrow} title={heading} align="left">
         {body}
       </SectionHeading>
       <ul class="reveal flex flex-col gap-2.5 text-sm">

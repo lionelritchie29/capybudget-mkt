@@ -1,0 +1,10 @@
+---
+import NotFoundPage from '../../components/pages/NotFoundPage.astro';
+
+// Vercel only serves the root 404.html for misses, so unknown /id/* paths render the Indonesian one here.
+export const prerender = false;
+
+Astro.response.status = 404;
+---
+
+<NotFoundPage />

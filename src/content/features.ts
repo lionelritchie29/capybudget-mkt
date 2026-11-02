@@ -1,5 +1,8 @@
+import type { Locale } from '../i18n/config';
+
 /**
  * Feature copy, shared by the home page bento (title + blurb) and /features (everything).
+ * Both locales list the same ids in the same order; only claim what the app actually does.
  */
 export type Feature = {
   id: string;
@@ -10,7 +13,7 @@ export type Feature = {
   points: string[];
 };
 
-export const FEATURES: Feature[] = [
+const en: Feature[] = [
   {
     id: 'plan',
     title: 'Plan the month',
@@ -139,8 +142,142 @@ export const FEATURES: Feature[] = [
   },
 ];
 
-export const feature = (id: string) => {
-  const found = FEATURES.find((f) => f.id === id);
+const id: Feature[] = [
+  {
+    id: 'plan',
+    title: 'Rencanakan bulan ini',
+    blurb:
+      'Alokasikan uang yang kamu punya ke tiap kategori. Pindah-pindahkan kalau ada kebutuhan mendadak; semua tercatat.',
+    heading: 'Rencana dari uang yang sudah ada',
+    body: 'Setiap rupiah yang masuk ke rekening langsung muncul di Siap Dialokasikan. Kasih tugas (sewa, belanja dapur, liburan itu) dan kamu selalu tahu berapa yang aman dibelanjakan.',
+    points: [
+      'Alokasikan, pindahkan, dan tutupi overspending cukup dengan beberapa klik',
+      'Mutasi Terakhir mencatat ke mana uang berpindah, lengkap dengan waktunya',
+      'Saring untuk lihat kategori yang kurang dana atau minus saja',
+      'Overspending tetap di kategorinya sampai kamu tutupi, nggak diam-diam motong jatah bulan depan',
+    ],
+  },
+  {
+    id: 'targets',
+    title: 'Target dan catatan',
+    blurb:
+      'Sisihkan jumlah tertentu tiap bulan per kategori. Lihat yang masih kurang dana sekilas, atau tunda target sebulan.',
+    heading: 'Target yang mengingatkan, bukan menuntut',
+    body: 'Tentukan jumlah yang mau disisihkan tiap bulan untuk sebuah kategori. Capybudget menunjukkan sudah sejauh mana, dan bisa menambal semua kategori yang kurang dana sekaligus.',
+    points: [
+      'Kuning artinya target masih butuh uang; hijau artinya beres',
+      'Tunda target sebulan kalau memang bisa menunggu',
+      'Catatan di setiap kategori, untuk "alasan" di balik angkanya',
+      'Alokasikan ke semua kategori yang kurang dana sekaligus',
+    ],
+  },
+  {
+    id: 'transactions',
+    title: 'Split dan tag',
+    blurb:
+      'Bagi satu struk ke beberapa kategori dan tandai yang penting, di daftar transaksi yang cepat dan ramah keyboard.',
+    heading: 'Pencatatan yang bisa ngikutin kamu',
+    body: 'Catat transaksi secepat kamu mengetik. Penerima, kategori, dan tanggal terisi otomatis, dan edit massal cukup sekali pilih.',
+    points: [
+      'Split satu transaksi ke sebanyak mungkin kategori yang kamu perlu',
+      'Tandai memo dengan [liburan], [kantor], atau [reimburse] lalu cari lagi nanti',
+      'Pencarian, rentang tanggal, dan ganti kategori secara massal',
+      'Transfer antar-akun otomatis tercatat di kedua sisi',
+    ],
+  },
+  {
+    id: 'scheduled',
+    title: 'Transaksi terjadwal',
+    blurb: 'Sewa, gaji, dan langganan tercatat sendiri tepat waktu, termasuk transfer.',
+    heading: 'Uang rutin, jalan otomatis',
+    body: 'Atur apa pun yang berulang dan Capybudget mencatatnya di harinya, sesuai zona waktumu, jadi rencanamu nggak pernah ketinggalan.',
+    points: [
+      'Sekali, mingguan, dua minggu sekali, dua kali sebulan, bulanan, tahunan, dan lainnya',
+      'Transfer terjadwal antar-akun',
+      'Transaksi mendatang sudah kelihatan di daftar sebelum tercatat',
+    ],
+  },
+  {
+    id: 'reports',
+    title: 'Laporan',
+    blurb:
+      'Pengeluaran per kategori, pemasukan vs pengeluaran, dan kekayaan bersih. Tiap angka bisa diklik untuk lihat transaksinya.',
+    heading: 'Laporan yang menjawab pertanyaanmu',
+    body: 'Lihat ke mana uangmu pergi, bagaimana bulan ini dibanding sebelumnya, dan apakah kamu makin maju. Klik bagian grafik mana pun untuk lihat transaksi di baliknya.',
+    points: [
+      'Pengeluaran per kategori, dalam bentuk rincian atau tren',
+      'Pemasukan vs pengeluaran per bulan',
+      'Kekayaan bersih dari waktu ke waktu',
+      'Saring berdasarkan akun, kategori, dan rentang tanggal',
+    ],
+  },
+  {
+    id: 'reconcile',
+    title: 'Rekonsiliasi',
+    blurb: 'Cocokkan dengan saldo bank dalam hitungan detik. Titik merah menandai akun yang punya transaksi tertunda.',
+    heading: 'Yakin dengan setiap saldo',
+    body: 'Rekonsiliasi akun dengan mutasi rekeningmu, dan Capybudget mengunci yang sudah cocok. Kalau ada selisih, cukup satu penyesuaian dan kamu bisa lanjut.',
+    points: [
+      'Transaksi terkonfirmasi dan tertunda kelihatan sekilas',
+      'Rekonsiliasi sekali langkah, dengan penyesuaian kalau perlu',
+      'Transaksi yang sudah direkonsiliasi aman dari edit nggak sengaja',
+    ],
+  },
+  {
+    id: 'undo',
+    title: 'Bisa diurungkan',
+    blurb: 'Salah alokasi kategori? Salah hapus baris? Tinggal undo atau redo.',
+    heading: 'Bebas berubah pikiran',
+    body: 'Setiap perubahan budget masuk ke riwayat yang bisa kamu telusuri mundur, jadi mencoba-coba nggak pernah berisiko.',
+    points: [
+      'Undo dan redo untuk alokasi, pemindahan, edit, dan hapus',
+      'Pratinjau apa saja yang berubah di setiap undo',
+      'Shortcut keyboard di mana-mana',
+    ],
+  },
+  {
+    id: 'ynab',
+    title: 'Pindahan dari YNAB?',
+    blurb: 'Akun, kategori, daftar penerima, dan seluruh riwayat transaksimu kami bawa waktu menyiapkan budget-mu.',
+    heading: 'Bawa riwayat YNAB-mu',
+    body: 'Capybudget memakai metode amplop yang sama, jadi budget YNAB-mu pindah apa adanya. Begitu giliranmu tiba, kami yang jalankan impornya: akun, grup kategori, penerima, semua transaksi, dan alokasi setiap bulan.',
+    points: [
+      'Riwayat lengkap, bukan cuma saldo',
+      'Split dan transfer tetap utuh',
+      'Rencanamu lanjut persis dari terakhir kamu tinggalkan',
+    ],
+  },
+  {
+    id: 'mobile',
+    title: 'Di HP kamu',
+    blurb: 'Tambahkan ke layar utama untuk aplikasi layar penuh dengan tombol yang besar dan swipe untuk kembali.',
+    heading: 'Muat di saku, fiturnya nggak dipangkas',
+    body: 'Capybudget bisa dipasang di layar utama dan terasa seperti aplikasi native: layar penuh, swipe untuk kembali, tarik untuk refresh, dan panel yang ikut naik bersama keyboard.',
+    points: [
+      'Pasang langsung dari browser di iOS dan Android',
+      'Tombol seukuran HP dengan area sentuh 44px',
+      'Tema terang dan gelap, mengikuti sistem',
+    ],
+  },
+  {
+    id: 'claude',
+    title: 'Bisa bareng Claude',
+    blurb:
+      'Hubungkan Claude untuk tanya soal budget-mu, mencatat struk, dan merapikan kategori, dengan persetujuanmu di setiap perubahan.',
+    heading: 'Tanya Claude soal budget-mu',
+    body: 'Capybudget punya server MCP bawaan, jadi Claude (di Claude.ai atau Claude Code) bisa membaca budget-mu dan membuat perubahan untukmu. Apa pun yang sifatnya menghapus selalu minta persetujuanmu dulu.',
+    points: [
+      '"Kuartal ini kita habis berapa buat makan di luar?"',
+      '"Catat struk ini dan split antara belanja dapur dan rumah tangga."',
+      'Hapus, edit massal, dan rekonsiliasi selalu butuh OK darimu',
+    ],
+  },
+];
+
+export const FEATURES: Record<Locale, Feature[]> = { en, id };
+
+export const feature = (locale: Locale, id: string) => {
+  const found = FEATURES[locale].find((f) => f.id === id);
   if (!found) throw new Error(`Unknown feature: ${id}`);
   return found;
 };

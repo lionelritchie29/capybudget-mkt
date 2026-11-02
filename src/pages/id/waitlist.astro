@@ -1,0 +1,12 @@
+---
+import WaitlistPage from '../../components/pages/WaitlistPage.astro';
+import { waitlistStatus } from '../../lib/waitlist-result';
+
+// The no-JS form on /id posts here. With JS, the form calls the action in place and never visits this page.
+export const prerender = false;
+
+const status = waitlistStatus(Astro);
+if (!status) return Astro.redirect('/id#waitlist');
+---
+
+<WaitlistPage status={status} />

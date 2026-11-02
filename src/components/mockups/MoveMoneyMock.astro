@@ -1,51 +1,60 @@
 ---
 import { ChevronDown, Minus, Plus } from '@lucide/astro';
-import { DEMO_MOVES } from '../../content/demo-budget';
-import { formatUsd } from '../../lib/money';
+import { useI18n } from '../../i18n';
 
 /** The Move money popover (move-money.tsx) next to the Recent Moves popover (recent-moves.tsx). */
+const { t, demo, money } = useI18n(Astro);
+const copy = t.app.moveMoney;
+const [from, to] = demo.moves;
 const popover = 'rounded-lg border border-border bg-popover shadow-md shadow-black/5';
 ---
 
 <div class="grid gap-3 text-sm sm:grid-cols-[1fr_1.15fr]">
   <div class:list={[popover, 'flex flex-col gap-3 p-3']}>
     <div>
-      <div class="text-sm font-semibold">Move money</div>
-      <div class="text-xs text-muted-foreground">Groceries</div>
+      <div class="text-sm font-semibold">{copy.title}</div>
+      <div class="text-xs text-muted-foreground">{from.category}</div>
     </div>
     <div class="flex items-center justify-between gap-3">
-      <span>Move</span>
+      <span>{copy.move}</span>
       <span class="flex h-8 w-32 items-center justify-end rounded-md border border-ring bg-background px-2.5 font-number tabular-nums ring-3 ring-ring/10">
-        $21.40
+        {money(from.amount)}
       </span>
     </div>
     <div class="flex flex-col gap-1.5">
-      <span>To</span>
+      <span>{copy.to}</span>
       <span class="flex h-8 items-center justify-between rounded-md border border-input bg-background px-2.5 shadow-xs">
-        Dining out <ChevronDown class="size-3.5 text-muted-foreground" />
+        {to.category} <ChevronDown class="size-3.5 text-muted-foreground" />
       </span>
     </div>
     <div class="flex justify-end gap-2">
       <span class="inline-flex h-7 items-center rounded-md border border-border bg-background px-2.5 text-[0.8rem] font-medium shadow-xs">
-        Cancel
+        {copy.cancel}
       </span>
       <span class="inline-flex h-7 items-center rounded-md bg-primary px-2.5 text-[0.8rem] font-medium text-primary-foreground">
-        Move
+        {copy.submit}
       </span>
     </div>
   </div>
 
   <div class:list={[popover, 'overflow-hidden']}>
     <div class="flex items-center justify-between border-b border-border px-3 py-2.5">
-      <span class="text-sm font-semibold">Recent Moves</span>
+      <span class="text-sm font-semibold">{copy.recentMoves}</span>
       <span class="flex items-center rounded-md border border-border bg-muted/60 p-0.5 text-[11px]">
-        <span class="rounded-sm bg-background px-1.5 py-0.5 font-medium shadow-xs">All</span>
-        <span class="px-1.5 py-0.5 text-muted-foreground">Moved</span>
-        <span class="px-1.5 py-0.5 text-muted-foreground">Assigned</span>
+        {copy.filters.map((filter, i) => (
+          <span
+            class:list={[
+              'px-1.5 py-0.5',
+              i === 0 ? 'rounded-sm bg-background font-medium shadow-xs' : 'text-muted-foreground',
+            ]}
+          >
+            {filter}
+          </span>
+        ))}
       </span>
     </div>
     <ul>
-      {DEMO_MOVES.slice(0, 3).map((m) => (
+      {demo.moves.slice(0, 3).map((m) => (
         <li class="flex items-start gap-2.5 border-b border-border px-3 py-2.5 last:border-b-0">
           <span
             class:list={[
@@ -58,7 +67,7 @@ const popover = 'rounded-lg border border-border bg-popover shadow-md shadow-bla
           <span class="min-w-0 flex-1">
             <span class="flex items-baseline justify-between gap-2">
               <span>
-                {m.kind === 'assigned' ? 'Assigned' : 'Removed'} {formatUsd(m.amount)}
+                {m.kind === 'assigned' ? copy.assigned : copy.removed} {money(m.amount)}
               </span>
               <span class="text-xs text-muted-foreground tabular-nums">{m.when}</span>
             </span>

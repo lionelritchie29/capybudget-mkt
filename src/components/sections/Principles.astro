@@ -1,28 +1,10 @@
 ---
 import { Coins, Globe, Scale, ShieldCheck } from '@lucide/astro';
+import { useI18n } from '../../i18n';
 
-const principles = [
-  {
-    icon: Coins,
-    title: 'Only real money',
-    body: 'You budget what is in your accounts today, not what you hope to earn.',
-  },
-  {
-    icon: Scale,
-    title: 'Overspending stays put',
-    body: 'A negative category carries forward until you cover it. It never quietly eats next month.',
-  },
-  {
-    icon: ShieldCheck,
-    title: 'No credit-card gymnastics',
-    body: 'Cash, checking and savings. No payment categories to babysit.',
-  },
-  {
-    icon: Globe,
-    title: 'Your currency, your day',
-    body: 'Each budget has its own currency and time zone, so "today" means your today.',
-  },
-];
+const { t } = useI18n(Astro);
+const icons = [Coins, Scale, ShieldCheck, Globe];
+const principles = t.principles.map((p, i) => ({ ...p, icon: icons[i] }));
 ---
 
 <section class="border-y border-border bg-sidebar/60">

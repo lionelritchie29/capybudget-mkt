@@ -4,6 +4,9 @@ import capy from '../../assets/capy-icon.png';
 import AppWindow from '../mockups/AppWindow.astro';
 import PlanScreen from '../mockups/PlanScreen.astro';
 import WaitlistForm from '../WaitlistForm.astro';
+import { useI18n } from '../../i18n';
+
+const { t, demo, moneyShort } = useI18n(Astro);
 ---
 
 <section class="relative isolate overflow-hidden">
@@ -12,18 +15,17 @@ import WaitlistForm from '../WaitlistForm.astro';
   <div class="mx-auto flex max-w-6xl flex-col items-center px-4 pt-16 text-center sm:px-6 sm:pt-24">
     <span class="eyebrow">
       <span class="size-1.5 rounded-full bg-brand"></span>
-      Letting people in from the waitlist
+      {t.hero.eyebrow}
     </span>
 
     <h1 class="mt-6 max-w-3xl text-[2.75rem] leading-[1.05] font-semibold tracking-tighter sm:text-6xl lg:text-7xl">
-      Give every dollar a job.{' '}
-      <span class="bg-linear-to-r from-brand-strong via-brand to-onsen bg-clip-text text-transparent">Then relax.</span>
+      {t.hero.titleLead}{' '}
+      <span class="bg-linear-to-r from-brand-strong via-brand to-onsen bg-clip-text text-transparent">
+        {t.hero.titleAccent}
+      </span>
     </h1>
 
-    <p class="mt-5 max-w-xl text-base text-muted-foreground sm:text-lg">
-      Capybudget is a calm, fast envelope budget for the money you actually have. Plan the month, see what's safe to
-      spend, and let the rest soak.
-    </p>
+    <p class="mt-5 max-w-xl text-base text-muted-foreground sm:text-lg">{t.hero.body}</p>
 
     <div id="waitlist" class="mt-8 flex w-full justify-center scroll-mt-28">
       <WaitlistForm source="hero" class="text-left" />
@@ -45,7 +47,11 @@ import WaitlistForm from '../WaitlistForm.astro';
       />
       <AppWindow
         active="plan"
-        label="The Capybudget Plan screen for November 2026: $640 ready to assign, and Bills, Everyday and Goals categories with assigned, activity and available amounts."
+        label={t.hero.mockLabel({
+          month: demo.month,
+          ready: moneyShort(demo.readyToAssign),
+          groups: demo.groups.map((g) => g.name),
+        })}
       >
         <PlanScreen />
       </AppWindow>

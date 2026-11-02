@@ -1,6 +1,7 @@
 ---
 import { ChartColumn, Landmark, LayoutGrid, Receipt, Settings } from '@lucide/astro';
 import PlanScreen from './PlanScreen.astro';
+import { useI18n } from '../../i18n';
 
 /**
  * The app on a phone: a true 375px-wide screen (so PlanScreen takes its phone layout) shrunk with
@@ -11,18 +12,19 @@ interface Props {
 }
 
 const { class: className } = Astro.props;
+const { t } = useI18n(Astro);
 const tabs = [
-  { label: 'Plan', icon: LayoutGrid, active: true },
-  { label: 'Transactions', icon: Receipt },
-  { label: 'Accounts', icon: Landmark },
-  { label: 'Reports', icon: ChartColumn },
-  { label: 'Settings', icon: Settings },
+  { label: t.app.nav.plan, icon: LayoutGrid, active: true },
+  { label: t.app.nav.transactions, icon: Receipt },
+  { label: t.app.nav.accounts, icon: Landmark },
+  { label: t.app.nav.reports, icon: ChartColumn },
+  { label: t.app.nav.settings, icon: Settings },
 ];
 ---
 
 <div
   role="img"
-  aria-label="Capybudget on a phone: the Plan screen with Ready to Assign and category balances, and the tab bar along the bottom."
+  aria-label={t.app.phoneLabel}
   class:list={[
     'relative w-fit shrink-0 rounded-[2.9rem] border border-border bg-card p-2.5 shadow-mock dark:bg-sidebar',
     className,

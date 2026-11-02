@@ -12,25 +12,30 @@ import {
   Search,
   Undo2,
 } from '@lucide/astro';
-import { DEMO_CHECKING, DEMO_REGISTER, DEMO_UPCOMING, type DemoTransaction } from '../../content/demo-budget';
-import { formatUsd } from '../../lib/money';
+import type { DemoTransaction } from '../../content/demo-budget';
+import { useI18n } from '../../i18n';
 
 /**
  * The Checking register (register-header.tsx, register-toolbar.tsx, register-table.tsx,
  * scheduled-rows.tsx, cleared-indicator.tsx), meant for AppWindow's main area. Below 42rem it
  * becomes the app's phone list: date headings and two-line cards.
  */
+const { t: dict, demo, money: format } = useI18n(Astro);
+const copy = dict.app.register;
+const account = demo.registerAccount;
 const money = 'font-number whitespace-nowrap tabular-nums';
-const needsCategory = DEMO_REGISTER.filter((t) => t.needsCategory).length;
+const needsCategory = demo.register.filter((t) => t.needsCategory).length;
 const balances = [
-  { label: 'Cleared Balance', short: 'Cleared', amount: DEMO_CHECKING.cleared },
-  { label: 'Uncleared Balance', short: 'Uncleared', amount: DEMO_CHECKING.uncleared },
-  { label: 'Working Balance', short: 'Working', amount: DEMO_CHECKING.working },
+  { ...copy.cleared, amount: demo.balances.cleared },
+  { ...copy.uncleared, amount: demo.balances.uncleared },
+  { ...copy.working, amount: demo.balances.working },
 ];
+const { date, payee, category, memo, outflow, inflow } = copy.headers;
+const columns = ['', date, payee, category, memo, outflow, inflow, copy.clearedMark];
 const tone = (n: number) =>
   n > 0 ? 'text-success-foreground' : n < 0 ? 'text-danger-foreground' : 'text-muted-foreground';
 const byDate = Object.entries(
-  DEMO_REGISTER.reduce<Record<string, DemoTransaction[]>>((acc, t) => ((acc[t.date] ??= []).push(t), acc), {})
+  demo.register.reduce<Record<string, DemoTransaction[]>>((acc, t) => ((acc[t.date] ??= []).push(t), acc), {})
 );
 ---
 
@@ -38,8 +43,10 @@ const byDate = Object.entries(
   <div class="flex flex-wrap items-end justify-between gap-3">
     <div class="space-y-3">
       <div>
-        <h1 class="truncate text-xl font-semibold tracking-tight">Checking</h1>
-        <p class="text-xs text-muted-foreground">Checking · {DEMO_CHECKING.reconciled}</p>
+        <h1 class="truncate text-xl font-semibold tracking-tight">{account.name}</h1>
+        <p class="text-xs text-muted-foreground">
+          {account.type} · {demo.balances.reconciled}
+        </p>
       </div>
       <div class="flex items-end gap-2 @2xl/main:gap-3">
         {balances.map((b, i) => (
@@ -49,7 +56,7 @@ const byDate = Object.entries(
             )}
             <div>
               <div class:list={[money, 'text-[13px] font-semibold @2xl/main:text-[15px]', tone(b.amount)]}>
-                {formatUsd(b.amount)}
+                {format(b.amount)}
               </div>
               <div class="text-[11px] text-muted-foreground">
                 <span class="@2xl/main:hidden">{b.short}</span>
@@ -63,38 +70,39 @@ const byDate = Object.entries(
     <div class="flex gap-2">
       <span class="inline-flex h-7 items-center gap-1 rounded-md border border-border bg-background px-2.5 text-[0.8rem] font-medium shadow-xs">
         <Pencil class="size-3.5" />
-        <span class="hidden @lg/main:inline">Edit account</span>
+        <span class="hidden @lg/main:inline">{copy.editAccount}</span>
       </span>
       <span class="inline-flex h-7 items-center gap-1 rounded-md bg-primary px-2.5 text-[0.8rem] font-medium text-primary-foreground">
         <Lock class="size-3.5" />
-        <span class="hidden @lg/main:inline">Reconcile</span>
+        <span class="hidden @lg/main:inline">{copy.reconcile}</span>
       </span>
     </div>
   </div>
 
   <div class="flex flex-wrap items-center gap-2">
     <span class="inline-flex h-7 items-center gap-1 rounded-md bg-primary px-2.5 text-[0.8rem] font-medium text-primary-foreground">
-      <Plus class="size-3.5" /> Add<span class="hidden @lg/main:inline"> Transaction</span>
+      <Plus class="size-3.5" /> {copy.add}
+      <span class="hidden @lg/main:inline">{copy.addSuffix}</span>
     </span>
     <span class="hidden h-8 items-center gap-1.5 rounded-md border border-warning-foreground/40 bg-background px-2.5 text-[0.8rem] font-medium text-warning-foreground @2xl/main:inline-flex">
       <CircleAlert class="size-3.5" />
-      {needsCategory} needs a category
+      {copy.needsCategoryCount(needsCategory)}
     </span>
     <span class="inline-flex h-7 items-center gap-1 rounded-md px-1.5 text-xs">
       <Undo2 class="size-3.5" />
-      <span class="hidden @lg/main:inline">Undo</span>
+      <span class="hidden @lg/main:inline">{dict.app.undo}</span>
     </span>
     <span class="inline-flex h-7 items-center gap-1 rounded-md px-1.5 text-xs text-muted-foreground opacity-40">
       <Redo2 class="size-3.5" />
-      <span class="hidden @lg/main:inline">Redo</span>
+      <span class="hidden @lg/main:inline">{dict.app.redo}</span>
     </span>
     <div class="ml-auto flex items-center gap-2">
       <span class="inline-flex h-8 items-center gap-1.5 rounded-md border border-border bg-background px-2.5 shadow-xs">
-        <span class="hidden text-muted-foreground @2xl/main:inline">View:</span> This month
+        <span class="hidden text-muted-foreground @2xl/main:inline">{copy.view}</span> {copy.thisMonth}
         <ChevronDown class="size-4 text-muted-foreground" />
       </span>
       <span class="hidden h-8 w-64 items-center gap-1.5 rounded-md border border-input bg-background pr-1 pl-2 text-muted-foreground @3xl/main:flex">
-        <Search class="size-3.5" /> Search Checking
+        <Search class="size-3.5" /> {copy.search(account.name)}
       </span>
     </div>
   </div>
@@ -114,7 +122,7 @@ const byDate = Object.entries(
       </colgroup>
       <thead class="text-[11px] text-muted-foreground">
         <tr>
-          {['', 'Date', 'Payee', 'Category', 'Memo', 'Outflow', 'Inflow', 'C'].map((h, i) => (
+          {columns.map((h, i) => (
             <th
               class:list={[
                 'h-8 border-b border-border bg-sidebar px-2 font-medium tracking-wide uppercase',
@@ -136,12 +144,11 @@ const byDate = Object.entries(
             class="h-8 border-b border-border bg-muted/80 px-2 text-[0.8125rem] font-semibold text-muted-foreground"
           >
             <span class="flex items-center gap-1">
-              <ChevronDown class="size-3.5" /> Upcoming transactions{' '}
-              <span class="font-normal">· {DEMO_UPCOMING.length}</span>
+              <ChevronDown class="size-3.5" /> {copy.upcoming} <span class="font-normal">· {demo.upcoming.length}</span>
             </span>
           </td>
         </tr>
-        {DEMO_UPCOMING.map((u) => (
+        {demo.upcoming.map((u) => (
           <tr class="bg-muted/70 text-muted-foreground italic">
             <td class="h-8 border-b border-border/70 px-2">
               <Repeat class="size-3.5" />
@@ -151,17 +158,17 @@ const byDate = Object.entries(
             <td class="h-8 truncate border-b border-border/70 px-2">{u.category}</td>
             <td class="h-8 truncate border-b border-border/70 px-2" />
             <td class:list={[money, 'h-8 border-b border-border/70 px-2 text-right']}>
-              {u.outflow ? formatUsd(u.outflow) : ''}
+              {u.outflow ? format(u.outflow) : ''}
             </td>
             <td class:list={[money, 'h-8 border-b border-border/70 px-2 text-right']}>
-              {u.inflow ? formatUsd(u.inflow) : ''}
+              {u.inflow ? format(u.inflow) : ''}
             </td>
             <td class="h-8 border-b border-border/70 px-2">
               <Ellipsis class="mx-auto size-3.5" />
             </td>
           </tr>
         ))}
-        {DEMO_REGISTER.map((t) => (
+        {demo.register.map((t) => (
           <tr
             class:list={[
               t.needsCategory && 'bg-warning/70',
@@ -182,14 +189,14 @@ const byDate = Object.entries(
               {t.needsCategory ? (
                 <span class="flex items-center gap-1 font-medium text-warning-foreground">
                   <CircleAlert class="size-3.5 shrink-0" />
-                  <span class="truncate">Needs a category</span>
+                  <span class="truncate">{copy.needsCategory}</span>
                 </span>
               ) : (
                 <span class="flex min-w-0 items-center">
                   <span class:list={['truncate', t.transfer && 'text-muted-foreground']}>{t.category}</span>
                   {t.split && (
                     <span class="ml-1 rounded bg-border px-1 py-px text-[10px] font-medium tracking-wide uppercase">
-                      Split
+                      {copy.split}
                     </span>
                   )}
                 </span>
@@ -197,10 +204,10 @@ const byDate = Object.entries(
             </td>
             <td class="h-8 truncate border-b border-border/70 px-2 text-muted-foreground">{t.memo}</td>
             <td class:list={[money, 'h-8 border-b border-border/70 px-2 text-right']}>
-              {t.outflow ? formatUsd(t.outflow) : ''}
+              {t.outflow ? format(t.outflow) : ''}
             </td>
             <td class:list={[money, 'h-8 border-b border-border/70 px-2 text-right']}>
-              {t.inflow ? formatUsd(t.inflow) : ''}
+              {t.inflow ? format(t.inflow) : ''}
             </td>
             <td class="h-8 border-b border-border/70 px-1">
               <span class="mx-auto flex size-6 items-center justify-center">
@@ -215,7 +222,7 @@ const byDate = Object.entries(
                         : 'border border-border text-muted-foreground',
                     ]}
                   >
-                    C
+                    {copy.clearedMark}
                   </span>
                 )}
               </span>
@@ -242,20 +249,20 @@ const byDate = Object.entries(
                   <span class="truncate font-medium">{t.payee.replace('Transfer: ', '')}</span>
                   {t.split && (
                     <span class="rounded bg-border px-1 py-px text-[10px] font-medium tracking-wide uppercase">
-                      Split
+                      {copy.split}
                     </span>
                   )}
                   <span class:list={[money, 'ml-auto text-sm', t.inflow && 'text-success-foreground']}>
-                    {t.inflow ? formatUsd(t.inflow) : formatUsd(-(t.outflow ?? 0))}
+                    {t.inflow ? format(t.inflow) : format(-(t.outflow ?? 0))}
                   </span>
                 </div>
                 <div class="mt-0.5 truncate text-xs text-muted-foreground">
                   {t.needsCategory ? (
                     <span class="inline-flex items-center gap-1 text-warning-foreground">
-                      <CircleAlert class="size-3" /> Needs a category
+                      <CircleAlert class="size-3" /> {copy.needsCategory}
                     </span>
                   ) : (
-                    [t.category?.split(': ').pop(), 'Checking', t.memo].filter(Boolean).join(' · ')
+                    [t.category?.split(': ').pop(), account.name, t.memo].filter(Boolean).join(' · ')
                   )}
                 </div>
               </div>
@@ -271,7 +278,7 @@ const byDate = Object.entries(
                         : 'border border-border text-muted-foreground',
                     ]}
                   >
-                    C
+                    {copy.clearedMark}
                   </span>
                 )}
               </span>

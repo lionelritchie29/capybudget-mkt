@@ -1,34 +1,27 @@
 ---
 import SectionHeading from '../SectionHeading.astro';
 import AvailablePill from '../mockups/AvailablePill.astro';
+import { findCategory } from '../../content/demo-budget';
+import { useI18n } from '../../i18n';
 
 type Step = { title: string; body: string; pills: { amount: number; underfunded?: boolean }[]; flow?: boolean };
 
+const { t, demo } = useI18n(Astro);
+const funded = findCategory(demo, demo.highlights.funded);
+const goal = findCategory(demo, demo.selected.name);
+const overspent = findCategory(demo, demo.highlights.overspent);
+const [assign, spend, roll] = t.howItWorks.steps;
 const steps: Step[] = [
-  {
-    title: 'Assign what you have',
-    body: 'Money that lands in your accounts goes to Ready to Assign. Give every dollar a category until it reaches zero.',
-    pills: [{ amount: 640 }, { amount: 0 }],
-    flow: true,
-  },
-  {
-    title: 'Spend from categories',
-    body: 'Transactions draw down their category. Green means there is still money to spend; yellow means a target still needs some.',
-    pills: [{ amount: 187.82 }, { amount: 1450, underfunded: true }],
-  },
-  {
-    title: 'Roll with it',
-    body: 'Overspent? Red shows exactly where. Move money from another category to cover it, and carry on.',
-    pills: [{ amount: -21.4 }, { amount: 0 }],
-    flow: true,
-  },
+  { ...assign, pills: [{ amount: demo.readyToAssign }, { amount: 0 }], flow: true },
+  { ...spend, pills: [{ amount: funded.available }, { amount: goal.available, underfunded: true }] },
+  { ...roll, pills: [{ amount: overspent.available }, { amount: 0 }], flow: true },
 ];
 ---
 
 <section id="how-it-works" class="border-y border-border bg-sidebar/60">
   <div class="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
-    <SectionHeading eyebrow="How it works" title="Three habits. That's the whole method.">
-      Envelope budgeting, the way it was meant to be: simple rules, applied to real money.
+    <SectionHeading eyebrow={t.howItWorks.eyebrow} title={t.howItWorks.title}>
+      {t.howItWorks.body}
     </SectionHeading>
 
     <ol class="mt-14 grid gap-4 md:grid-cols-3">

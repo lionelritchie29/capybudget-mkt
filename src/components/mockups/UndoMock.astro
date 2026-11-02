@@ -1,39 +1,44 @@
 ---
 import { ArrowRight, Redo2, Undo2 } from '@lucide/astro';
 
+import { useI18n } from '../../i18n';
+
 /** The Undo button and its hover card (undo-redo-buttons.tsx, history-preview.tsx). */
+const { t, demo, money } = useI18n(Astro);
+const copy = t.app.undoCard;
+const { edit } = demo;
 ---
 
 <div class="flex flex-col gap-2 text-sm">
   <div class="flex items-center gap-0.5">
     <span class="inline-flex h-7 items-center gap-1 rounded-md bg-muted px-1.5 text-xs">
-      <Undo2 class="size-3.5" /> Undo
+      <Undo2 class="size-3.5" /> {t.app.undo}
     </span>
     <span class="inline-flex h-7 items-center gap-1 rounded-md px-1.5 text-xs text-muted-foreground opacity-40">
-      <Redo2 class="size-3.5" /> Redo
+      <Redo2 class="size-3.5" /> {t.app.redo}
     </span>
   </div>
   <div class="rounded-lg border border-border bg-popover p-3 shadow-md shadow-black/5">
     <div class="flex items-center justify-between gap-2">
-      <span class="font-medium">Undo edit transaction</span>
+      <span class="font-medium">{copy.title}</span>
       <kbd class="rounded border border-border bg-muted px-1 font-sans text-[11px] text-muted-foreground">⌘Z</kbd>
     </div>
     <div class="mt-2 space-y-1.5 border-t border-border pt-2 text-xs">
       <div>
-        <span class="font-semibold">Trattoria Roma</span> <span class="text-muted-foreground">Outflow</span>
+        <span class="font-semibold">{edit.payee}</span> <span class="text-muted-foreground">{copy.outflow}</span>
       </div>
       <div class="flex items-center gap-1.5 font-number tabular-nums">
-        <span class="text-muted-foreground line-through">$86.40</span>
+        <span class="text-muted-foreground line-through">{money(edit.from)}</span>
         <ArrowRight class="size-3 text-muted-foreground" />
-        <span class="font-semibold">$68.40</span>
+        <span class="font-semibold">{money(edit.to)}</span>
       </div>
       <div>
-        <span class="font-semibold">Trattoria Roma</span> <span class="text-muted-foreground">Category</span>
+        <span class="font-semibold">{edit.payee}</span> <span class="text-muted-foreground">{copy.category}</span>
       </div>
       <div class="flex items-center gap-1.5">
-        <span class="text-muted-foreground line-through">Everyday: Groceries</span>
+        <span class="text-muted-foreground line-through">{edit.fromCategory}</span>
         <ArrowRight class="size-3 text-muted-foreground" />
-        <span class="font-semibold">Everyday: Dining out</span>
+        <span class="font-semibold">{edit.toCategory}</span>
       </div>
     </div>
   </div>

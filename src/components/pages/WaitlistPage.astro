@@ -1,0 +1,25 @@
+---
+import Base from '../../layouts/Base.astro';
+import Logo from '../Logo.astro';
+import WaitlistForm from '../WaitlistForm.astro';
+import { useI18n } from '../../i18n';
+
+interface Props {
+  status: { kind: 'success' } | { kind: 'error'; message: string };
+}
+
+const { status } = Astro.props;
+const { t, path } = useI18n(Astro);
+const copy = t.waitlistPage;
+---
+
+<Base title={copy.title} noindex>
+  <section class="mx-auto flex max-w-md flex-col items-center gap-6 px-4 py-24 text-center sm:py-32">
+    <Logo size={72} wordmark={false} />
+    <h1 class="text-3xl font-semibold">{status.kind === 'success' ? copy.joined : copy.join}</h1>
+    <WaitlistForm source="hero" status={status} class="text-left" />
+    <a href={path('/')} class="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
+      {copy.back}
+    </a>
+  </section>
+</Base>

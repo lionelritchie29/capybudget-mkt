@@ -1,15 +1,23 @@
 ---
 import { Monitor, Moon, Sun } from '@lucide/astro';
+import { useI18n } from '../i18n';
+
+const { t } = useI18n(Astro);
 
 /** Same control as the app's Appearance setting, icon-only to fit the footer. */
 const options = [
-  { value: 'system', label: 'System', icon: Monitor },
-  { value: 'light', label: 'Light', icon: Sun },
-  { value: 'dark', label: 'Dark', icon: Moon },
+  { value: 'system', label: t.themeOptions.system, icon: Monitor },
+  { value: 'light', label: t.themeOptions.light, icon: Sun },
+  { value: 'dark', label: t.themeOptions.dark, icon: Moon },
 ];
 ---
 
-<div role="radiogroup" aria-label="Theme" class="flex w-fit rounded-lg border border-border p-0.5" data-theme-setting>
+<div
+  role="radiogroup"
+  aria-label={t.theme.label}
+  class="flex w-fit rounded-lg border border-border p-0.5"
+  data-theme-setting
+>
   {options.map(({ value, label, icon: Icon }) => (
     <button
       type="button"

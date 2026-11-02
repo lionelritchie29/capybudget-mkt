@@ -1,16 +1,17 @@
 ---
-import { DEMO_REGISTER } from '../../content/demo-budget';
-import { formatUsd } from '../../lib/money';
+import { useI18n } from '../../i18n';
 
 /** Register rows for a split (left grey rail, SPLIT badge) and a [tag] at the start of a memo. */
-const rows = DEMO_REGISTER.filter((t) => t.split || t.payee === 'Trattoria Roma');
+const { t: dict, demo, money } = useI18n(Astro);
+const copy = dict.app.register;
+const rows = demo.register.filter((t) => t.split || t.payee === demo.edit.payee);
 ---
 
 <div class="overflow-hidden rounded-md border border-border text-[13px]">
   <div class="grid h-8 grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)_4.5rem] items-center border-b border-border bg-sidebar px-2 text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
-    <span>Payee</span>
-    <span>Category</span>
-    <span class="text-right">Outflow</span>
+    <span>{copy.headers.payee}</span>
+    <span>{copy.headers.category}</span>
+    <span class="text-right">{copy.headers.outflow}</span>
   </div>
   {rows.map((t) => (
     <div
@@ -24,10 +25,12 @@ const rows = DEMO_REGISTER.filter((t) => t.split || t.payee === 'Trattoria Roma'
         <span class="flex min-w-0 items-center">
           <span class="truncate">{t.category?.split(': ').pop()}</span>
           {t.split && (
-            <span class="ml-1 rounded bg-border px-1 py-px text-[10px] font-medium tracking-wide uppercase">Split</span>
+            <span class="ml-1 rounded bg-border px-1 py-px text-[10px] font-medium tracking-wide uppercase">
+              {copy.split}
+            </span>
           )}
         </span>
-        <span class="text-right font-number tabular-nums">{formatUsd(t.outflow ?? 0)}</span>
+        <span class="text-right font-number tabular-nums">{money(t.outflow ?? 0)}</span>
       </div>
       {t.memo && <div class="truncate text-xs text-muted-foreground">{t.memo}</div>}
     </div>

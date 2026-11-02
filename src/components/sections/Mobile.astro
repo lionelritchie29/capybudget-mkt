@@ -3,13 +3,15 @@ import { Check } from '@lucide/astro';
 import SectionHeading from '../SectionHeading.astro';
 import PhoneMock from '../mockups/PhoneMock.astro';
 import { feature } from '../../content/features';
+import { useI18n } from '../../i18n';
 
-const { heading, body, points } = feature('mobile');
+const { locale, t } = useI18n(Astro);
+const { heading, body, points } = feature(locale, 'mobile');
 ---
 
 <section class="mx-auto grid max-w-6xl items-center gap-14 overflow-x-clip px-4 py-20 sm:px-6 sm:py-28 md:grid-cols-[1fr_auto] lg:gap-24">
   <div class="flex flex-col gap-6">
-    <SectionHeading eyebrow="On your phone" title={heading} align="left">
+    <SectionHeading eyebrow={t.mobile.eyebrow} title={heading} align="left">
       {body}
     </SectionHeading>
     <ul class="reveal flex flex-col gap-2.5 text-sm">

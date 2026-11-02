@@ -11,15 +11,8 @@ import {
 } from '@lucide/astro';
 import AvailablePill from './AvailablePill.astro';
 import CategoryPanel from './CategoryPanel.astro';
-import {
-  DEMO_GROUPS,
-  DEMO_MONTH,
-  DEMO_SELECTED,
-  READY_TO_ASSIGN,
-  groupTotal,
-  isUnderfunded,
-} from '../../content/demo-budget';
-import { formatUsd } from '../../lib/money';
+import { groupTotal, isUnderfunded } from '../../content/demo-budget';
+import { useI18n } from '../../i18n';
 
 /**
  * The Plan page (budget-screen.tsx, budget-toolbar.tsx, budget-table.tsx, group-block.tsx), meant
@@ -31,7 +24,9 @@ interface Props {
 }
 
 const { panel = false } = Astro.props;
-const all = DEMO_GROUPS.flatMap((g) => g.categories);
+const { t, demo, money: format } = useI18n(Astro);
+const copy = t.app;
+const all = demo.groups.flatMap((g) => g.categories);
 const overspent = all.filter((c) => c.available < 0).length;
 const underfunded = all.filter(isUnderfunded).length;
 
@@ -44,22 +39,22 @@ const checkbox = 'size-4 rounded-[4px] border border-input bg-background shadow-
 <div class:list={['grid gap-4', panel && '@5xl/main:grid-cols-[minmax(0,1fr)_20rem] @5xl/main:items-start']}>
   <div class="flex min-w-0 flex-col gap-2 text-sm @2xl/main:gap-4">
     <div class="flex flex-wrap items-center justify-between gap-3">
-      <h1 class="hidden text-xl font-semibold tracking-tight @2xl/main:block">Budget</h1>
+      <h1 class="hidden text-xl font-semibold tracking-tight @2xl/main:block">{copy.budget}</h1>
       <div class="flex items-center gap-1">
         <span class="flex size-7 items-center justify-center rounded-md border border-border bg-background shadow-xs">
           <ChevronLeft class="size-4" />
         </span>
-        <span class="w-36 truncate text-center text-sm font-medium">{DEMO_MONTH}</span>
+        <span class="w-36 truncate text-center text-sm font-medium">{demo.month}</span>
         <span class="flex size-7 items-center justify-center rounded-md border border-border bg-background shadow-xs">
           <ChevronRight class="size-4" />
         </span>
         <span class="ml-1 hidden h-7 items-center rounded-md px-2.5 text-[0.8rem] font-medium text-muted-foreground opacity-50 @2xl/main:inline-flex">
-          Today
+          {copy.today}
         </span>
       </div>
       <span class="flex h-7 items-center gap-1 rounded-md border border-input bg-background px-2.5 text-[0.8rem] font-medium shadow-xs @2xl/main:hidden">
         <TriangleAlert class="size-3.5 text-danger-foreground" />
-        All
+        {copy.all}
         <ChevronDown class="size-3.5 text-muted-foreground" />
       </span>
     </div>
@@ -68,46 +63,46 @@ const checkbox = 'size-4 rounded-[4px] border border-input bg-background shadow-
       <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
         <div>
           <div class="font-number text-xl font-medium tracking-tight text-success-foreground tabular-nums @2xl/main:text-2xl">
-            {formatUsd(READY_TO_ASSIGN)}
+            {format(demo.readyToAssign)}
           </div>
-          <div class="text-xs font-medium text-muted-foreground">Ready to Assign</div>
+          <div class="text-xs font-medium text-muted-foreground">{copy.readyToAssign}</div>
         </div>
       </div>
       <span class="inline-flex h-7 items-center gap-1 rounded-md border border-border bg-background px-2.5 text-[0.8rem] font-medium shadow-xs">
-        Assign <ChevronDown class="size-3.5" />
+        {copy.assign} <ChevronDown class="size-3.5" />
       </span>
     </div>
 
     <div class="flex flex-wrap items-center gap-x-0.5 gap-y-1">
       <div class="mr-2 hidden items-center rounded-md border border-border bg-muted/60 p-0.5 @2xl/main:flex">
         <span class="inline-flex h-7 items-center rounded-sm bg-background px-2 text-xs font-medium shadow-xs">
-          All
+          {copy.all}
         </span>
         <span class="inline-flex h-7 items-center gap-1 rounded-sm px-2 text-xs font-medium text-danger-foreground">
           <TriangleAlert class="size-3.5" />
-          {overspent} Overspent
+          {copy.overspent(overspent)}
         </span>
         <span class="inline-flex h-7 items-center rounded-sm px-2 text-xs font-medium text-muted-foreground">
-          {underfunded} Underfunded
+          {copy.underfunded(underfunded)}
         </span>
         <span class="inline-flex h-7 items-center rounded-sm px-2 text-xs font-medium text-muted-foreground">
-          Overfunded
+          {copy.overfunded}
         </span>
       </div>
       <span class="inline-flex h-7 items-center gap-1 rounded-md px-1.5 text-xs font-medium text-primary">
-        <CirclePlus class="size-3.5" /> Category Group
+        <CirclePlus class="size-3.5" /> {copy.categoryGroup}
       </span>
       <span class="inline-flex h-7 items-center gap-1 rounded-md px-1.5 text-xs">
         <Undo2 class="size-3.5" />
-        <span class="hidden @lg/main:inline">Undo</span>
+        <span class="hidden @lg/main:inline">{copy.undo}</span>
       </span>
       <span class="inline-flex h-7 items-center gap-1 rounded-md px-1.5 text-xs text-muted-foreground opacity-40">
         <Redo2 class="size-3.5" />
-        <span class="hidden @lg/main:inline">Redo</span>
+        <span class="hidden @lg/main:inline">{copy.redo}</span>
       </span>
       <span class="inline-flex h-7 items-center gap-1 rounded-md px-1.5 text-xs text-muted-foreground">
         <RotateCcwClock class="size-3.5" />
-        <span class="hidden @lg/main:inline">Moves</span>
+        <span class="hidden @lg/main:inline">{copy.moves}</span>
       </span>
     </div>
 
@@ -123,13 +118,13 @@ const checkbox = 'size-4 rounded-[4px] border border-input bg-background shadow-
           <ChevronDown class="size-3.5" />
           <span class={checkbox}></span>
         </span>
-        <span class="pr-2 pl-3 @2xl/main:pl-0">Category</span>
-        <span class="pr-2 text-right @2xl/main:px-3">Assigned</span>
-        <span class="hidden px-3 text-right @2xl/main:block">Activity</span>
-        <span class="pr-5 text-right @2xl/main:px-3">Available</span>
+        <span class="pr-2 pl-3 @2xl/main:pl-0">{copy.columns.category}</span>
+        <span class="pr-2 text-right @2xl/main:px-3">{copy.columns.assigned}</span>
+        <span class="hidden px-3 text-right @2xl/main:block">{copy.columns.activity}</span>
+        <span class="pr-5 text-right @2xl/main:px-3">{copy.columns.available}</span>
       </div>
 
-      {DEMO_GROUPS.map((group) => (
+      {demo.groups.map((group) => (
         <div class="border-t border-border first:border-t-0">
           <div class:list={[grid, 'bg-muted/80 py-1 text-[0.8125rem] font-semibold']}>
             <span class="hidden items-center gap-1.5 self-stretch pr-2 pl-1 @2xl/main:flex">
@@ -142,15 +137,15 @@ const checkbox = 'size-4 rounded-[4px] border border-input bg-background shadow-
               <span class="truncate">{group.name}</span>
             </span>
             <span class:list={[money, 'pr-2 text-right @2xl/main:pr-[1.1rem]']}>
-              {formatUsd(groupTotal(group, 'assigned'))}
+              {format(groupTotal(group, 'assigned'))}
             </span>
             <span class:list={[money, 'hidden px-3 text-right @2xl/main:block']}>
-              {formatUsd(groupTotal(group, 'activity'))}
+              {format(groupTotal(group, 'activity'))}
             </span>
-            <span class:list={[money, 'pr-5 text-right']}>{formatUsd(groupTotal(group, 'available'))}</span>
+            <span class:list={[money, 'pr-5 text-right']}>{format(groupTotal(group, 'available'))}</span>
           </div>
           {group.categories.map((c) => {
-            const selected = panel && c.name === DEMO_SELECTED.name;
+            const selected = panel && c.name === demo.selected.name;
             return (
               <div class:list={[grid, 'border-t border-border py-1 text-sm', selected ? 'bg-muted' : 'bg-background']}>
                 <span class="hidden items-center gap-1.5 self-stretch pr-2 pl-1 @2xl/main:flex">
@@ -178,7 +173,7 @@ const checkbox = 'size-4 rounded-[4px] border border-input bg-background shadow-
                       c.assigned === 0 && 'text-muted-foreground',
                     ]}
                   >
-                    {formatUsd(c.assigned)}
+                    {format(c.assigned)}
                   </span>
                 </span>
                 <span
@@ -188,7 +183,7 @@ const checkbox = 'size-4 rounded-[4px] border border-input bg-background shadow-
                     c.activity === 0 && 'text-muted-foreground',
                   ]}
                 >
-                  {formatUsd(c.activity)}
+                  {format(c.activity)}
                 </span>
                 <span class="flex justify-end pr-3 @2xl/main:px-3">
                   <span class="rounded-full p-0.5">

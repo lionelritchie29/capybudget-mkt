@@ -1,10 +1,21 @@
 ---
 import { Moon, Sun } from '@lucide/astro';
 import Button from './ui/Button.astro';
+import { useI18n } from '../i18n';
+
+const { t } = useI18n(Astro);
 ---
 
 <!-- Flips between light and dark from whatever is showing. The footer has the full System / Light / Dark choice. -->
-<Button variant="ghost" size="icon" class="text-muted-foreground" data-theme-toggle aria-label="Switch to dark theme">
+<Button
+  variant="ghost"
+  size="icon"
+  class="text-muted-foreground"
+  data-theme-toggle
+  data-label-light={t.theme.toLight}
+  data-label-dark={t.theme.toDark}
+  aria-label={t.theme.toDark}
+>
   <Moon class="dark:hidden" aria-hidden="true" />
   <Sun class="hidden dark:block" aria-hidden="true" />
 </Button>
@@ -14,7 +25,10 @@ import Button from './ui/Button.astro';
 
   const buttons = document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]');
   const label = () => {
-    for (const button of buttons) button.setAttribute('aria-label', `Switch to ${isDark() ? 'light' : 'dark'} theme`);
+    for (const button of buttons) {
+      const next = isDark() ? button.dataset.labelLight : button.dataset.labelDark;
+      if (next) button.setAttribute('aria-label', next);
+    }
   };
   for (const button of buttons) button.addEventListener('click', () => setTheme(isDark() ? 'light' : 'dark'));
   document.addEventListener('themechange', label);

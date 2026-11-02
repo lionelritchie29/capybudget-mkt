@@ -1,8 +1,29 @@
-const usd = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
+export type Currency = 'USD' | 'IDR';
 
-/** Mockup amounts are whole dollars or cents as a number (12.5 → $12.50). Negatives keep the sign up front. */
-export function formatUsd(amount: number): string {
-  return usd.format(amount);
+/** Same shapes as the app: USD as "$1,234.56", IDR (zero-decimal) as "Rp 1.234.567". */
+const formats: Record<Currency, Intl.NumberFormat> = {
+  USD: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }),
+  IDR: new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }),
+};
+
+const shortFormats: Record<Currency, Intl.NumberFormat> = {
+  USD: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', trailingZeroDisplay: 'stripIfInteger' }),
+  IDR: formats.IDR,
+};
+
+/** Mockup amounts are plain numbers in currency units (12.5 → $12.50). Negatives keep the sign up front. */
+export function formatMoney(amount: number, currency: Currency): string {
+  return formats[currency].format(amount);
+}
+
+/** For prose such as aria-labels, where "$640" reads better than "$640.00". */
+export function formatMoneyShort(amount: number, currency: Currency): string {
+  return shortFormats[currency].format(amount);
 }
 
 export type Tone = 'success' | 'warning' | 'danger' | 'zero';

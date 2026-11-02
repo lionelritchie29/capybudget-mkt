@@ -1,23 +1,30 @@
 ---
 import Logo from './Logo.astro';
 import ThemeSetting from './ThemeSetting.astro';
-import { NAV_LINKS, SIGN_IN_URL } from '../lib/site';
+import { SIGN_IN_URL } from '../lib/site';
+import { LOCALES, localizePath, ui, unlocalizePath, useI18n } from '../i18n';
 
+const { locale, t, path } = useI18n(Astro);
 const year = new Date().getFullYear();
+const languages = LOCALES.filter((l) => l !== locale).map((l) => ({
+  locale: l,
+  href: localizePath(unlocalizePath(Astro.url.pathname), l),
+  name: ui[l].language.name,
+}));
 ---
 
 <footer class="border-t border-border">
   <div class="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-10 sm:px-6 md:flex-row md:items-start md:justify-between">
     <div class="flex flex-col gap-3">
       <Logo size={24} />
-      <p class="max-w-xs text-sm text-muted-foreground">Calm envelope budgeting. Made with a lot of soaking.</p>
+      <p class="max-w-xs text-sm text-muted-foreground">{t.footer.tagline}</p>
     </div>
 
-    <nav aria-label="Footer" class="flex gap-12 text-sm">
+    <nav aria-label={t.footer.label} class="flex gap-12 text-sm">
       <ul class="flex flex-col gap-2">
-        {NAV_LINKS.map(({ href, label }) => (
+        {t.nav.links.map(({ href, label }) => (
           <li>
-            <a href={href} class="text-muted-foreground hover:text-foreground">
+            <a href={path(href)} class="text-muted-foreground hover:text-foreground">
               {label}
             </a>
           </li>
@@ -25,15 +32,28 @@ const year = new Date().getFullYear();
       </ul>
       <ul class="flex flex-col gap-2">
         <li>
-          <a href="/#waitlist" class="text-muted-foreground hover:text-foreground">
-            Join the waitlist
+          <a href={path('/#waitlist')} class="text-muted-foreground hover:text-foreground">
+            {t.footer.join}
           </a>
         </li>
         <li>
           <a href={SIGN_IN_URL} class="text-muted-foreground hover:text-foreground">
-            Sign in
+            {t.footer.signIn}
           </a>
         </li>
+        {languages.map((l) => (
+          <li>
+            <a
+              href={l.href}
+              hreflang={l.locale}
+              lang={l.locale}
+              class="text-muted-foreground hover:text-foreground"
+              data-language-switch
+            >
+              {l.name}
+            </a>
+          </li>
+        ))}
       </ul>
     </nav>
   </div>

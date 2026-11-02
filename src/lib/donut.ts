@@ -32,5 +32,6 @@ export function donutSlices<T extends { amount: number }>(
   });
 }
 
-/** The app's percent format: always one decimal. */
-export const formatShare = (share: number) => `${(share * 100).toFixed(1)}%`;
+/** The app's percent format: always one decimal, with the locale's decimal mark (41.2% / 41,2%). */
+export const formatShare = (share: number, locale: string) =>
+  `${new Intl.NumberFormat(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(share * 100)}%`;

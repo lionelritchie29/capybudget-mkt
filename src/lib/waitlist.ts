@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { RESEND_API_KEY, SUPABASE_SECRET_KEY, SUPABASE_URL, WAITLIST_FROM_EMAIL } from 'astro:env/server';
 import { confirmationEmail } from './waitlist-email';
+import type { Locale } from '../i18n/config';
 
 export const WAITLIST_SOURCES = ['hero', 'final-cta', 'features'] as const;
 export type WaitlistSource = (typeof WAITLIST_SOURCES)[number];
@@ -36,13 +37,13 @@ export async function addToWaitlist(row: {
 }
 
 /** Best effort: a failed send is logged and never fails the sign-up. */
-export async function sendConfirmation(email: string): Promise<void> {
+export async function sendConfirmation(email: string, locale: Locale): Promise<void> {
   if (!RESEND_API_KEY) {
     console.warn('RESEND_API_KEY is not set; skipping the waitlist confirmation email');
     return;
   }
   try {
-    const { subject, html, text } = confirmationEmail();
+    const { subject, html, text } = confirmationEmail(locale);
     const { error } = await new Resend(RESEND_API_KEY).emails.send({
       from: WAITLIST_FROM_EMAIL,
       to: email,

@@ -1,5 +1,6 @@
 ---
-import { availableTone, formatUsd } from '../../lib/money';
+import { availableTone } from '../../lib/money';
+import { useI18n } from '../../i18n';
 
 /** The app's AvailablePill (src/components/budget/available-pill.tsx), minus interactivity. */
 interface Props {
@@ -11,6 +12,7 @@ interface Props {
 
 const { amount, underfunded = false, size = 'default', class: className } = Astro.props;
 const tone = availableTone(amount, underfunded);
+const { money } = useI18n(Astro);
 ---
 
 <span
@@ -24,5 +26,5 @@ const tone = availableTone(amount, underfunded);
     className,
   ]}
 >
-  {formatUsd(amount)}
+  {money(amount)}
 </span>

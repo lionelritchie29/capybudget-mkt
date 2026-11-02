@@ -1,30 +1,35 @@
 ---
-import { Menu, X } from '@lucide/astro';
+import { Languages, Menu, X } from '@lucide/astro';
 import Logo from './Logo.astro';
 import ThemeToggle from './ThemeToggle.astro';
 import Button from './ui/Button.astro';
-import { NAV_LINKS, SIGN_IN_URL } from '../lib/site';
+import { SIGN_IN_URL } from '../lib/site';
+import { LOCALES, localizePath, ui, unlocalizePath, useI18n } from '../i18n';
 
+const { locale, t, path: localize } = useI18n(Astro);
 const path = Astro.url.pathname;
-const waitlistHref = path === '/' ? '#waitlist' : '/#waitlist';
+const home = localize('/');
+const waitlistHref = path === home ? '#waitlist' : `${home}#waitlist`;
+// The same page in the other language(s); the script below carries the current #section along.
+const languages = LOCALES.filter((l) => l !== locale).map((l) => ({
+  locale: l,
+  href: localizePath(unlocalizePath(path), l),
+  ...ui[l].language,
+}));
 ---
 
 <header class="nav-shell sticky top-0 z-40 border-b bg-background/75 backdrop-blur-lg">
-  <nav aria-label="Main" class="mx-auto flex h-16 max-w-6xl items-center gap-4 px-4 sm:px-6">
-    <a
-      href="/"
-      class="rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring"
-      aria-label="Capybudget home"
-    >
+  <nav aria-label={t.nav.label} class="mx-auto flex h-16 max-w-6xl items-center gap-4 px-4 sm:px-6">
+    <a href={home} class="rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={t.nav.home}>
       <Logo />
     </a>
 
     <ul class="ml-6 hidden items-center gap-1 md:flex">
-      {NAV_LINKS.map(({ href, label }) => (
+      {t.nav.links.map(({ href, label }) => (
         <li>
           <a
-            href={href}
-            aria-current={href === path ? 'page' : undefined}
+            href={localize(href)}
+            aria-current={localize(href) === path ? 'page' : undefined}
             class="rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring aria-[current=page]:text-foreground"
           >
             {label}
@@ -34,36 +39,67 @@ const waitlistHref = path === '/' ? '#waitlist' : '/#waitlist';
     </ul>
 
     <div class="ml-auto flex items-center gap-1.5">
+      {languages.map((l) => (
+        <Button
+          href={l.href}
+          variant="ghost"
+          class="text-muted-foreground max-md:hidden"
+          hreflang={l.locale}
+          lang={l.locale}
+          title={l.switchTo}
+          aria-label={l.switchTo}
+          data-language-switch
+        >
+          <Languages aria-hidden="true" />
+          {l.short}
+        </Button>
+      ))}
       <Button href={SIGN_IN_URL} variant="ghost" class="max-sm:hidden">
-        Sign in
+        {t.nav.signIn}
       </Button>
       <ThemeToggle />
       <Button href={waitlistHref}>
-        Join<span class="max-sm:hidden"> the</span> waitlist
+        {t.nav.join.before}
+        {t.nav.join.optional && <span class="max-sm:hidden">{t.nav.join.optional}</span>}
+        {t.nav.join.after}
       </Button>
 
       <details class="group relative md:hidden" data-mobile-menu>
         <summary
           class="tap-target flex size-(--control-h) cursor-pointer list-none items-center justify-center rounded-md text-muted-foreground outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden"
-          aria-label="Menu"
+          aria-label={t.nav.menu}
         >
           <Menu class="size-(--control-icon) group-open:hidden" aria-hidden="true" />
           <X class="hidden size-(--control-icon) group-open:block" aria-hidden="true" />
         </summary>
         <div class="absolute top-full right-0 mt-2 w-56 rounded-lg border border-border bg-popover p-1.5 text-popover-foreground shadow-lg">
           <ul>
-            {NAV_LINKS.map(({ href, label }) => (
+            {t.nav.links.map(({ href, label }) => (
               <li>
-                <a href={href} class="flex rounded-md px-3 py-(--menu-item-py) text-sm hover:bg-muted">
+                <a href={localize(href)} class="flex rounded-md px-3 py-(--menu-item-py) text-sm hover:bg-muted">
                   {label}
                 </a>
               </li>
             ))}
             <li class="mt-1 border-t border-border pt-1">
               <a href={SIGN_IN_URL} class="flex rounded-md px-3 py-(--menu-item-py) text-sm hover:bg-muted">
-                Sign in
+                {t.nav.signIn}
               </a>
             </li>
+            {languages.map((l) => (
+              <li>
+                <a
+                  href={l.href}
+                  hreflang={l.locale}
+                  lang={l.locale}
+                  class="flex items-center gap-2 rounded-md px-3 py-(--menu-item-py) text-sm hover:bg-muted"
+                  data-language-switch
+                >
+                  <Languages class="size-4 text-muted-foreground" aria-hidden="true" />
+                  {l.name}
+                </a>
+              </li>
+            ))}
           </ul>
         </div>
       </details>
@@ -86,6 +122,13 @@ const waitlistHref = path === '/' ? '#waitlist' : '/#waitlist';
         menu.open = false;
         menu.querySelector('summary')?.focus();
       }
+    });
+  }
+
+  // Section ids are the same in every language, so switching keeps you on the section you were reading.
+  for (const link of document.querySelectorAll<HTMLAnchorElement>('[data-language-switch]')) {
+    link.addEventListener('click', () => {
+      if (location.hash) link.hash = location.hash;
     });
   }
 </script>

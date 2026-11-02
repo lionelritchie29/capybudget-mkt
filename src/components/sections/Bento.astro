@@ -10,6 +10,9 @@ import TargetMock from '../mockups/TargetMock.astro';
 import UndoMock from '../mockups/UndoMock.astro';
 import YnabMock from '../mockups/YnabMock.astro';
 import { feature } from '../../content/features';
+import { useI18n } from '../../i18n';
+
+const { locale, t, path } = useI18n(Astro);
 
 const tiles = [
   { id: 'plan', mock: MoveMoneyMock, span: 'lg:col-span-4' },
@@ -20,12 +23,12 @@ const tiles = [
   { id: 'reconcile', mock: ReconcileMock, span: 'lg:col-span-2' },
   { id: 'undo', mock: UndoMock, span: 'lg:col-span-2' },
   { id: 'ynab', mock: YnabMock, span: 'lg:col-span-2' },
-].map((tile) => ({ ...tile, ...feature(tile.id) }));
+].map((tile) => ({ ...tile, ...feature(locale, tile.id) }));
 ---
 
 <section id="features" class="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
-  <SectionHeading eyebrow="Everything in one calm place" title="All the envelope budgeting. None of the stress.">
-    The tools you need to run a monthly plan, and none of the ones that make you feel behind.
+  <SectionHeading eyebrow={t.bento.eyebrow} title={t.bento.title}>
+    {t.bento.body}
   </SectionHeading>
 
   <div class="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
@@ -52,10 +55,10 @@ const tiles = [
 
   <div class="mt-10 flex justify-center">
     <a
-      href="/features"
+      href={path('/features')}
       class="inline-flex items-center gap-1.5 rounded-md text-sm font-medium outline-none hover:underline hover:underline-offset-4 focus-visible:ring-2 focus-visible:ring-ring"
     >
-      See every feature <ArrowRight class="size-4" aria-hidden="true" />
+      {t.bento.seeAll} <ArrowRight class="size-4" aria-hidden="true" />
     </a>
   </div>
 </section>

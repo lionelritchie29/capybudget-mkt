@@ -1,0 +1,142 @@
+---
+import { Check } from '@lucide/astro';
+import Base from '../../layouts/Base.astro';
+import FinalCta from '../sections/FinalCta.astro';
+import AppWindow from '../mockups/AppWindow.astro';
+import ChatMock from '../mockups/ChatMock.astro';
+import PhoneMock from '../mockups/PhoneMock.astro';
+import PlanScreen from '../mockups/PlanScreen.astro';
+import ReconcileMock from '../mockups/ReconcileMock.astro';
+import RegisterScreen from '../mockups/RegisterScreen.astro';
+import ReportsScreen from '../mockups/ReportsScreen.astro';
+import ScheduledMock from '../mockups/ScheduledMock.astro';
+import UndoMock from '../mockups/UndoMock.astro';
+import YnabMock from '../mockups/YnabMock.astro';
+import { findCategory } from '../../content/demo-budget';
+import { useI18n } from '../../i18n';
+
+const { t, demo, moneyShort, features } = useI18n(Astro);
+const page = t.featuresPage;
+const selected = findCategory(demo, demo.selected.name);
+const splitPayee = demo.register.find((r) => r.split)?.payee ?? '';
+
+/** Small mockups shown on a card beside the copy; the big screens and the phone/chat are below. */
+const carded: Record<string, typeof UndoMock> = {
+  scheduled: ScheduledMock,
+  reconcile: ReconcileMock,
+  undo: UndoMock,
+  ynab: YnabMock,
+};
+const wide = new Set(['plan', 'targets', 'transactions', 'reports']);
+---
+
+<Base title={page.title} description={page.description}>
+  <section class="relative isolate overflow-hidden border-b border-border">
+    <div class="bg-grid absolute inset-0 -z-10" aria-hidden="true"></div>
+    <div class="mx-auto flex max-w-3xl flex-col items-center px-4 py-20 text-center sm:px-6 sm:py-24">
+      <span class="eyebrow">{page.eyebrow}</span>
+      <h1 class="mt-6 text-4xl leading-[1.05] font-semibold tracking-tighter sm:text-6xl">{page.heading}</h1>
+      <p class="mt-5 max-w-xl text-base text-muted-foreground sm:text-lg">{page.body}</p>
+      <nav aria-label={page.toc} class="mt-8">
+        <ul class="flex flex-wrap justify-center gap-2 text-sm">
+          {features.map(({ id, title }) => (
+            <li>
+              <a
+                href={`#${id}`}
+                class="inline-flex h-8 items-center rounded-full border border-border bg-background/80 px-3 text-muted-foreground backdrop-blur transition-colors hover:text-foreground"
+              >
+                {title}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </div>
+  </section>
+
+  <div class="mx-auto flex max-w-6xl flex-col gap-24 overflow-x-clip px-4 py-16 sm:px-6 lg:gap-32 lg:py-24">
+    {features.map(({ id, title, heading, body, points }, index) => {
+      const Card = carded[id];
+      const copy = (
+        <div class="reveal flex flex-col gap-5">
+          <span class="text-sm font-medium text-brand-strong">{title}</span>
+          <h2 class="text-3xl font-semibold tracking-tighter text-balance">{heading}</h2>
+          <p class="text-base text-muted-foreground">{body}</p>
+          <ul class:list={['grid gap-2.5 text-sm', wide.has(id) && 'sm:grid-cols-2 sm:gap-x-8']}>
+            {points.map((point) => (
+              <li class="flex gap-2.5">
+                <Check class="mt-0.5 size-4 shrink-0 text-success-foreground" aria-hidden="true" />
+                {point}
+              </li>
+            ))}
+          </ul>
+        </div>
+      );
+      return wide.has(id) ? (
+        <section id={id} class="flex scroll-mt-24 flex-col gap-10">
+          <div class="max-w-3xl">{copy}</div>
+          <div class="reveal relative">
+            <div class="glow absolute inset-x-0 -inset-y-8 -z-10" aria-hidden="true" />
+            {id === 'plan' && (
+              <AppWindow active="plan" label={page.planLabel}>
+                <PlanScreen />
+              </AppWindow>
+            )}
+            {id === 'targets' && (
+              <AppWindow
+                active="plan"
+                sidebar={false}
+                label={page.targetsLabel({
+                  category: selected.name,
+                  target: moneyShort(selected.target ?? 0),
+                  gap: moneyShort(Math.max(0, (selected.target ?? 0) - selected.assigned)),
+                })}
+              >
+                <PlanScreen panel />
+              </AppWindow>
+            )}
+            {id === 'transactions' && (
+              <AppWindow
+                account={demo.registerAccount.name}
+                label={page.registerLabel({ account: demo.registerAccount.name, splitPayee })}
+              >
+                <RegisterScreen />
+              </AppWindow>
+            )}
+            {id === 'reports' && (
+              <AppWindow active="reports" label={page.reportsLabel}>
+                <ReportsScreen />
+              </AppWindow>
+            )}
+          </div>
+        </section>
+      ) : (
+        <section id={id} class="grid scroll-mt-24 items-center gap-10 lg:grid-cols-2 lg:gap-16">
+          <div class:list={['min-w-0', index % 2 === 1 && 'lg:order-last']}>{copy}</div>
+          <div class="reveal relative min-w-0">
+            <div class="glow absolute -inset-6 -z-10" aria-hidden="true" />
+            {id === 'mobile' && (
+              <div class="flex justify-center">
+                <PhoneMock />
+              </div>
+            )}
+            {id === 'claude' && <ChatMock />}
+            {Card && (
+              <div
+                role="img"
+                aria-label={page.cardLabel(title)}
+                class="mx-auto max-w-md rounded-xl border border-border bg-card p-5 shadow-mock"
+              >
+                <div aria-hidden="true" inert>
+                  <Card />
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+      );
+    })}
+  </div>
+
+  <FinalCta source="features" />
+</Base>
