@@ -8,7 +8,7 @@ Decisions so far:
 - **Domain:** the marketing site takes `capybudget.site`, and the app moves to `app.capybudget.site`.
 - **v1 pages:** landing page (`/`) and a features deep-dive (`/features`).
 - **Visuals:** HTML mockups only, rebuilt from the app's own components and tokens (no screenshots), so they follow light/dark and never go stale against a demo account.
-- **Currency:** mockups show USD.
+- **Currency:** mockups show USD on the English pages and IDR (local amounts, not a conversion) on the Bahasa Indonesia pages under `/id`.
 - **Claude/MCP and YNAB import:** both are advertised as features.
 - **GitHub link:** none on the site.
 - **Confirmation email:** sent on sign-up, in v1.
