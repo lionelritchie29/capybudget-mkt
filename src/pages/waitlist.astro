@@ -1,0 +1,32 @@
+---
+import { actions, isInputError } from 'astro:actions';
+import Base from '../layouts/Base.astro';
+import Logo from '../components/Logo.astro';
+import WaitlistForm from '../components/WaitlistForm.astro';
+
+// The no-JS form posts here. With JS, the form calls the action in place and never visits this page.
+export const prerender = false;
+
+const result = Astro.getActionResult(actions.waitlist.join);
+if (!result) return Astro.redirect('/#waitlist');
+
+const status = result.error
+  ? ({
+      kind: 'error',
+      message: isInputError(result.error)
+        ? (result.error.fields.email?.[0] ?? 'Enter a valid email address.')
+        : result.error.message,
+    } as const)
+  : ({ kind: 'success' } as const);
+---
+
+<Base title="Waitlist" noindex>
+  <section class="mx-auto flex max-w-md flex-col items-center gap-6 px-4 py-24 text-center sm:py-32">
+    <Logo size={72} wordmark={false} />
+    <h1 class="text-3xl font-semibold">{status.kind === 'success' ? "You're on the list" : 'Join the waitlist'}</h1>
+    <WaitlistForm source="hero" status={status} class="text-left" />
+    <a href="/" class="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
+      Back to the home page
+    </a>
+  </section>
+</Base>

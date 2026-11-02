@@ -1,0 +1,26 @@
+---
+import { Image } from 'astro:assets';
+import capy from '../../assets/capy-icon.png';
+import WaitlistForm from '../WaitlistForm.astro';
+
+interface Props {
+  source?: 'final-cta' | 'features';
+}
+
+const { source = 'final-cta' } = Astro.props;
+---
+
+<section class="relative isolate overflow-hidden border-t border-border">
+  <div class="bg-grid absolute inset-0 -z-10" aria-hidden="true"></div>
+  <div class="glow absolute inset-x-0 top-1/4 -z-10 mx-auto h-64 max-w-2xl" aria-hidden="true"></div>
+  <div class="mx-auto flex max-w-2xl flex-col items-center px-4 py-20 text-center sm:px-6 sm:py-28">
+    <Image src={capy} alt="" width={112} height={112} densities={[1, 2]} class="reveal w-24 sm:w-28" />
+    <h2 class="reveal mt-6 text-3xl font-semibold tracking-tighter sm:text-5xl">Ready for a calmer budget?</h2>
+    <p class="reveal mt-4 max-w-md text-base text-muted-foreground sm:text-lg">
+      Join the waitlist and we'll let you know as soon as your spot opens up.
+    </p>
+    <div class="reveal mt-8 flex w-full justify-center">
+      <WaitlistForm source={source} class="text-left" />
+    </div>
+  </div>
+</section>

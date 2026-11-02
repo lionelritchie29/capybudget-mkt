@@ -1,0 +1,29 @@
+---
+import { Check } from '@lucide/astro';
+import SectionHeading from '../SectionHeading.astro';
+import ChatMock from '../mockups/ChatMock.astro';
+import { feature } from '../../content/features';
+
+const { heading, body, points } = feature('claude');
+---
+
+<section class="border-y border-border bg-sidebar/60">
+  <div class="mx-auto grid max-w-6xl items-center gap-14 px-4 py-20 sm:px-6 sm:py-28 md:grid-cols-2 lg:gap-20">
+    <div class="reveal order-last md:order-first">
+      <ChatMock />
+    </div>
+    <div class="flex flex-col gap-6">
+      <SectionHeading eyebrow="Works with Claude" title={heading} align="left">
+        {body}
+      </SectionHeading>
+      <ul class="reveal flex flex-col gap-2.5 text-sm">
+        {points.map((point) => (
+          <li class="flex gap-2.5">
+            <Check class="mt-0.5 size-4 shrink-0 text-success-foreground" aria-hidden="true" />
+            {point}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</section>

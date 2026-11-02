@@ -1,0 +1,30 @@
+---
+import { Check } from '@lucide/astro';
+
+const rows = [
+  ['Accounts', '6'],
+  ['Categories', '42'],
+  ['Payees', '318'],
+  ['Transactions, with splits and transfers', '8,214'],
+  ['Months of assignments', '71'],
+];
+---
+
+<div class="flex flex-col gap-2.5 text-[13px]">
+  <div class="flex items-center justify-between text-xs">
+    <span class="font-medium">Importing from YNAB</span>
+    <span class="text-success-foreground">Done</span>
+  </div>
+  <span class="h-1.5 overflow-hidden rounded-full bg-success">
+    <span class="block h-full w-full rounded-full bg-success-foreground"></span>
+  </span>
+  <ul class="flex flex-col gap-1">
+    {rows.map(([label, count]) => (
+      <li class="flex items-center gap-2">
+        <Check class="size-3.5 text-success-foreground" />
+        <span class="flex-1 truncate">{label}</span>
+        <span class="font-number text-muted-foreground tabular-nums">{count}</span>
+      </li>
+    ))}
+  </ul>
+</div>

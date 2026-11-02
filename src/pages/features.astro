@@ -1,0 +1,156 @@
+---
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
+import { Check } from '@lucide/astro';
+import Base from '../layouts/Base.astro';
+import FinalCta from '../components/sections/FinalCta.astro';
+import ChatMock from '../components/mockups/ChatMock.astro';
+import PhoneMock from '../components/mockups/PhoneMock.astro';
+import PlanMock from '../components/mockups/PlanMock.astro';
+import ReconcileMock from '../components/mockups/ReconcileMock.astro';
+import ReportsMock from '../components/mockups/ReportsMock.astro';
+import ScheduledMock from '../components/mockups/ScheduledMock.astro';
+import SplitMock from '../components/mockups/SplitMock.astro';
+import TargetMock from '../components/mockups/TargetMock.astro';
+import UndoMock from '../components/mockups/UndoMock.astro';
+import YnabMock from '../components/mockups/YnabMock.astro';
+import { FEATURES } from '../content/features';
+
+// Captured by `pnpm screenshots`. Any that are missing fall back to the HTML mockup below.
+const shots = import.meta.glob<ImageMetadata>('../assets/screenshots/*/*.png', { eager: true, import: 'default' });
+const screenshot = (theme: 'light' | 'dark', name?: string) =>
+  name ? shots[`../assets/screenshots/${theme}/${name}.png`] : undefined;
+
+/** Mockups that already carry their own frame (window, phone, chat); the rest get a card. */
+const framed: Record<string, typeof PlanMock> = { plan: PlanMock, mobile: PhoneMock, claude: ChatMock };
+const carded: Record<string, typeof PlanMock> = {
+  targets: TargetMock,
+  transactions: SplitMock,
+  scheduled: ScheduledMock,
+  reports: ReportsMock,
+  reconcile: ReconcileMock,
+  undo: UndoMock,
+  ynab: YnabMock,
+};
+
+const sections = FEATURES.map((f) => ({
+  ...f,
+  light: screenshot('light', f.screenshot),
+  dark: screenshot('dark', f.screenshot),
+  Framed: framed[f.id],
+  Carded: carded[f.id],
+}));
+---
+
+<Base
+  title="Features"
+  description="Everything in Capybudget: the monthly plan, targets, a fast register with splits and tags, scheduled transactions, reports, reconcile, undo, YNAB import, a phone app and Claude."
+>
+  <section class="relative isolate overflow-hidden border-b border-border">
+    <div class="bg-grid absolute inset-0 -z-10" aria-hidden="true"></div>
+    <div class="mx-auto flex max-w-3xl flex-col items-center px-4 py-20 text-center sm:px-6 sm:py-24">
+      <span class="eyebrow">Features</span>
+      <h1 class="mt-6 text-4xl leading-[1.05] font-semibold tracking-tighter sm:text-6xl">
+        Everything a calm budget needs
+      </h1>
+      <p class="mt-5 max-w-xl text-base text-muted-foreground sm:text-lg">
+        A tour of Capybudget, from the monthly plan to the phone in your pocket.
+      </p>
+    </div>
+  </section>
+
+  <div class="mx-auto grid max-w-6xl gap-12 px-4 py-16 sm:px-6 lg:grid-cols-[12rem_minmax(0,1fr)] lg:py-24">
+    <nav aria-label="On this page" class="hidden lg:block">
+      <ul class="sticky top-24 flex flex-col gap-0.5 border-l border-border text-sm" data-toc>
+        {sections.map(({ id, title }) => (
+          <li>
+            <a
+              href={`#${id}`}
+              class="-ml-px block border-l border-transparent py-1.5 pl-4 text-muted-foreground transition-colors hover:text-foreground aria-[current=true]:border-foreground aria-[current=true]:font-medium aria-[current=true]:text-foreground"
+            >
+              {title}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="flex flex-col gap-24 lg:gap-32">
+      {sections.map(({ id, title, heading, body, points, light, dark, Framed, Carded }, index) => (
+        <section id={id} class="grid scroll-mt-24 items-center gap-10 xl:grid-cols-2" data-feature>
+          <div class:list={['reveal flex flex-col gap-5', index % 2 === 1 && 'xl:order-last']}>
+            <span class="text-sm font-medium text-brand-strong">{title}</span>
+            <h2 class="text-3xl font-semibold tracking-tighter">{heading}</h2>
+            <p class="text-base text-muted-foreground">{body}</p>
+            <ul class="flex flex-col gap-2.5 text-sm">
+              {points.map((point) => (
+                <li class="flex gap-2.5">
+                  <Check class="mt-0.5 size-4 shrink-0 text-success-foreground" aria-hidden="true" />
+                  {point}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div class="reveal relative">
+            <div class="glow absolute -inset-6 -z-10" aria-hidden="true" />
+            {light && dark ? (
+              <div class="overflow-hidden rounded-xl border border-border shadow-mock">
+                <Image
+                  src={light}
+                  alt={`${title} in Capybudget`}
+                  widths={[640, 960, 1280]}
+                  sizes="(min-width: 1280px) 560px, (min-width: 1024px) 720px, 100vw"
+                  class="dark:hidden"
+                />
+                <Image
+                  src={dark}
+                  alt={`${title} in Capybudget`}
+                  widths={[640, 960, 1280]}
+                  sizes="(min-width: 1280px) 560px, (min-width: 1024px) 720px, 100vw"
+                  class="hidden dark:block"
+                />
+              </div>
+            ) : Framed ? (
+              <div class:list={['flex', id === 'plan' ? 'flex-col' : 'justify-center']}>
+                <Framed />
+              </div>
+            ) : (
+              Carded && (
+                <div
+                  role="img"
+                  aria-label={`${title} in Capybudget`}
+                  class="mx-auto max-w-md rounded-xl border border-border bg-card p-5 shadow-mock"
+                >
+                  <div aria-hidden="true" inert>
+                    <Carded />
+                  </div>
+                </div>
+              )
+            )}
+          </div>
+        </section>
+      ))}
+    </div>
+  </div>
+
+  <FinalCta source="features" />
+</Base>
+
+<script>
+  // Highlight the table-of-contents entry for the section in view.
+  const links = new Map(
+    [...document.querySelectorAll<HTMLAnchorElement>('[data-toc] a')].map((a) => [a.hash.slice(1), a])
+  );
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        for (const link of links.values()) link.removeAttribute('aria-current');
+        links.get(entry.target.id)?.setAttribute('aria-current', 'true');
+      }
+    },
+    { rootMargin: '-30% 0px -60% 0px' }
+  );
+  for (const section of document.querySelectorAll('[data-feature]')) observer.observe(section);
+</script>

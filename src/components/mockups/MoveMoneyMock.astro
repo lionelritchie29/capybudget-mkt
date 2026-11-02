@@ -1,0 +1,47 @@
+---
+import { ArrowRight, ArrowLeftRight } from '@lucide/astro';
+import AvailablePill from './AvailablePill.astro';
+
+const moves = [
+  { from: 'Groceries', to: 'Dining out', amount: '$21.40', when: 'Today, 7:42 PM' },
+  { from: 'Ready to Assign', to: 'Vacation', amount: '$200.00', when: 'Nov 1, 9:10 AM' },
+  { from: 'Ready to Assign', to: 'Rent', amount: '$1,850.00', when: 'Nov 1, 9:08 AM' },
+];
+---
+
+<div class="grid gap-3 text-[13px] sm:grid-cols-[1fr_1.1fr]">
+  <div class="flex flex-col gap-3 rounded-lg border border-border bg-popover p-3 shadow-sm">
+    <span class="text-xs font-medium text-muted-foreground">Move money</span>
+    <div class="flex flex-col gap-1.5">
+      <span class="flex items-center justify-between rounded-md border border-input px-2.5 py-1.5">
+        Groceries <AvailablePill amount={187.82} />
+      </span>
+      <ArrowRight class="mx-auto size-3.5 rotate-90 text-muted-foreground" />
+      <span class="flex items-center justify-between rounded-md border border-input px-2.5 py-1.5">
+        Dining out <AvailablePill amount={-21.4} />
+      </span>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="flex-1 rounded-md border border-ring px-2.5 py-1.5 font-number tabular-nums ring-3 ring-ring/10">
+        $21.40
+      </span>
+      <span class="rounded-md bg-primary px-3 py-1.5 font-medium text-primary-foreground">Move</span>
+    </div>
+  </div>
+  <div class="flex flex-col rounded-lg border border-border">
+    <span class="flex items-center gap-1.5 border-b border-border px-3 py-2 text-xs font-medium text-muted-foreground">
+      <ArrowLeftRight class="size-3.5" /> Recent Moves
+    </span>
+    {moves.map((move) => (
+      <span class="flex items-center gap-2 border-b border-border/60 px-3 py-2 last:border-b-0">
+        <span class="min-w-0 flex-1">
+          <span class="block truncate">
+            {move.from} → {move.to}
+          </span>
+          <span class="block text-[11px] text-muted-foreground">{move.when}</span>
+        </span>
+        <span class="font-number font-medium tabular-nums">{move.amount}</span>
+      </span>
+    ))}
+  </div>
+</div>

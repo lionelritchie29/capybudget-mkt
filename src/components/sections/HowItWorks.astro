@@ -1,0 +1,54 @@
+---
+import SectionHeading from '../SectionHeading.astro';
+import AvailablePill from '../mockups/AvailablePill.astro';
+
+type Step = { title: string; body: string; pills: { amount: number; underfunded?: boolean }[]; flow?: boolean };
+
+const steps: Step[] = [
+  {
+    title: 'Assign what you have',
+    body: 'Money that lands in your accounts goes to Ready to Assign. Give every dollar a category until it reaches zero.',
+    pills: [{ amount: 640 }, { amount: 0 }],
+    flow: true,
+  },
+  {
+    title: 'Spend from categories',
+    body: 'Transactions draw down their category. Green means there is still money to spend; yellow means a target still needs some.',
+    pills: [{ amount: 187.82 }, { amount: 1450, underfunded: true }],
+  },
+  {
+    title: 'Roll with it',
+    body: 'Overspent? Red shows exactly where. Move money from another category to cover it, and carry on.',
+    pills: [{ amount: -21.4 }, { amount: 0 }],
+    flow: true,
+  },
+];
+---
+
+<section id="how-it-works" class="border-y border-border bg-sidebar/60">
+  <div class="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
+    <SectionHeading eyebrow="How it works" title="Three habits. That's the whole method.">
+      Envelope budgeting, the way it was meant to be: simple rules, applied to real money.
+    </SectionHeading>
+
+    <ol class="mt-14 grid gap-4 md:grid-cols-3">
+      {steps.map((step, index) => (
+        <li class="reveal flex flex-col gap-4 rounded-xl border border-border bg-card p-6">
+          <span class="flex size-8 items-center justify-center rounded-full border border-border font-number text-sm font-semibold tabular-nums">
+            {index + 1}
+          </span>
+          <h3 class="text-lg font-semibold">{step.title}</h3>
+          <p class="text-sm text-muted-foreground">{step.body}</p>
+          <div class="mt-auto flex items-center gap-2 pt-2" aria-hidden="true">
+            {step.pills.map((pill, i) => (
+              <>
+                {i > 0 && step.flow && <span class="text-muted-foreground">→</span>}
+                <AvailablePill amount={pill.amount} underfunded={pill.underfunded} size="lg" />
+              </>
+            ))}
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>

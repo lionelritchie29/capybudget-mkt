@@ -1,0 +1,18 @@
+---
+import { Image } from 'astro:assets';
+import capy from '../assets/capy-icon.png';
+
+interface Props {
+  size?: number;
+  /** Show the wordmark next to the capybara. */
+  wordmark?: boolean;
+  class?: string;
+}
+
+const { size = 28, wordmark = true, class: className } = Astro.props;
+---
+
+<span class:list={['inline-flex items-center gap-2', className]}>
+  <Image src={capy} alt="" width={size} height={size} class="shrink-0" loading="eager" />
+  {wordmark && <span class="text-[0.9375rem] font-semibold tracking-tight">Capybudget</span>}
+</span>

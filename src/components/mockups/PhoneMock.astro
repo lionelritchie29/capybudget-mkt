@@ -1,0 +1,82 @@
+---
+import { ChartColumn, Landmark, LayoutGrid, Receipt, Settings } from '@lucide/astro';
+import AvailablePill from './AvailablePill.astro';
+import { DEMO_GROUPS, DEMO_MONTH, READY_TO_ASSIGN } from '../../content/demo-budget';
+import { formatUsd } from '../../lib/money';
+
+/** The phone Plan: Category, Assigned, Available edge to edge, with the floating tab bar. */
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+const tabs = [
+  { label: 'Plan', icon: LayoutGrid, active: true },
+  { label: 'Transactions', icon: Receipt },
+  { label: 'Accounts', icon: Landmark },
+  { label: 'Reports', icon: ChartColumn },
+  { label: 'Settings', icon: Settings },
+];
+---
+
+<div
+  role="img"
+  aria-label="Capybudget on a phone: the Plan screen with Ready to Assign and category balances, and a tab bar along the bottom."
+  class:list={[
+    'relative w-[19rem] shrink-0 rounded-[2.75rem] border border-border bg-card p-2.5 shadow-mock dark:bg-sidebar',
+    className,
+  ]}
+>
+  <div aria-hidden="true" inert class="relative h-[34rem] overflow-hidden rounded-[2.2rem] bg-background text-[12px]">
+    <div class="flex items-center justify-between px-6 pt-3 pb-2 text-[11px] font-semibold">
+      <span>9:41</span>
+      <span class="h-5 w-20 rounded-full bg-foreground"></span>
+      <span class="flex gap-0.5">
+        <span class="h-2.5 w-4 rounded-sm border border-foreground/70"></span>
+      </span>
+    </div>
+    <div class="flex flex-col gap-2.5 px-3 pt-2">
+      <span class="text-[15px] font-semibold tracking-tight">{DEMO_MONTH}</span>
+      <div class="rounded-lg border border-success-foreground/20 bg-success px-3 py-2">
+        <div class="font-number text-base font-medium text-success-foreground tabular-nums">
+          {formatUsd(READY_TO_ASSIGN)}
+        </div>
+        <div class="text-[11px] font-medium text-muted-foreground">Ready to Assign</div>
+      </div>
+    </div>
+    <div class="mt-2.5 border-t border-border">
+      <div class="grid grid-cols-[minmax(0,1fr)_4.5rem_5.5rem] py-1.5 text-[11px] font-medium text-muted-foreground">
+        <span class="pl-3">Category</span>
+        <span class="pr-2 text-right">Assigned</span>
+        <span class="pr-3 text-right">Available</span>
+      </div>
+      {DEMO_GROUPS.slice(1).map((group) => (
+        <>
+          <div class="bg-muted/50 px-3 py-1 text-[11px] font-semibold">{group.name}</div>
+          {group.categories.map((category) => (
+            <div class="grid grid-cols-[minmax(0,1fr)_4.5rem_5.5rem] items-center border-t border-border/60 py-2">
+              <span class="truncate pl-3">{category.name}</span>
+              <span class="pr-2 text-right font-number tabular-nums">{formatUsd(category.assigned)}</span>
+              <span class="flex justify-end pr-3">
+                <AvailablePill amount={category.available} underfunded={category.underfunded} />
+              </span>
+            </div>
+          ))}
+        </>
+      ))}
+    </div>
+    <div class="absolute inset-x-3 bottom-4 flex justify-between rounded-2xl border border-border bg-background/90 px-2 py-1.5 shadow-lg backdrop-blur">
+      {tabs.map(({ label, icon: Icon, active }) => (
+        <span
+          class:list={[
+            'flex min-w-0 flex-1 flex-col items-center gap-0.5 text-[8.5px] tracking-tight',
+            active ? 'font-medium text-foreground' : 'text-muted-foreground',
+          ]}
+        >
+          <Icon class="size-4" />
+          {label}
+        </span>
+      ))}
+    </div>
+  </div>
+</div>

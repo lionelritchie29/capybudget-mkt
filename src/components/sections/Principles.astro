@@ -1,0 +1,40 @@
+---
+import { Coins, Globe, Scale, ShieldCheck } from '@lucide/astro';
+
+const principles = [
+  {
+    icon: Coins,
+    title: 'Only real money',
+    body: 'You budget what is in your accounts today, not what you hope to earn.',
+  },
+  {
+    icon: Scale,
+    title: 'Overspending stays put',
+    body: 'A negative category carries forward until you cover it. It never quietly eats next month.',
+  },
+  {
+    icon: ShieldCheck,
+    title: 'No credit-card gymnastics',
+    body: 'Cash, checking and savings. No payment categories to babysit.',
+  },
+  {
+    icon: Globe,
+    title: 'Your currency, your day',
+    body: 'Each budget has its own currency and time zone, so "today" means your today.',
+  },
+];
+---
+
+<section class="border-y border-border bg-sidebar/60">
+  <ul class="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:grid-cols-2 sm:px-6 lg:grid-cols-4">
+    {principles.map(({ icon: Icon, title, body }) => (
+      <li class="reveal flex flex-col gap-2">
+        <span class="flex size-8 items-center justify-center rounded-md border border-border bg-background">
+          <Icon class="size-4 text-brand-strong" aria-hidden="true" />
+        </span>
+        <h3 class="text-[0.9375rem] font-semibold">{title}</h3>
+        <p class="text-sm text-muted-foreground">{body}</p>
+      </li>
+    ))}
+  </ul>
+</section>

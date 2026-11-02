@@ -1,0 +1,44 @@
+---
+import Logo from './Logo.astro';
+import ThemeSetting from './ThemeSetting.astro';
+import { NAV_LINKS, SIGN_IN_URL } from '../lib/site';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-border">
+  <div class="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-10 sm:px-6 md:flex-row md:items-start md:justify-between">
+    <div class="flex flex-col gap-3">
+      <Logo size={24} />
+      <p class="max-w-xs text-sm text-muted-foreground">Calm envelope budgeting. Made with a lot of soaking.</p>
+    </div>
+
+    <nav aria-label="Footer" class="flex gap-12 text-sm">
+      <ul class="flex flex-col gap-2">
+        {NAV_LINKS.map(({ href, label }) => (
+          <li>
+            <a href={href} class="text-muted-foreground hover:text-foreground">
+              {label}
+            </a>
+          </li>
+        ))}
+      </ul>
+      <ul class="flex flex-col gap-2">
+        <li>
+          <a href="/#waitlist" class="text-muted-foreground hover:text-foreground">
+            Join the waitlist
+          </a>
+        </li>
+        <li>
+          <a href={SIGN_IN_URL} class="text-muted-foreground hover:text-foreground">
+            Sign in
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+  <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 border-t border-border px-4 py-5 text-xs text-muted-foreground sm:px-6">
+    <p>© {year} Capybudget</p>
+    <ThemeSetting />
+  </div>
+</footer>

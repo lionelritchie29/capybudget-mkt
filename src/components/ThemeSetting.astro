@@ -1,0 +1,41 @@
+---
+import { Monitor, Moon, Sun } from '@lucide/astro';
+
+/** Same control as the app's Appearance setting, icon-only to fit the footer. */
+const options = [
+  { value: 'system', label: 'System', icon: Monitor },
+  { value: 'light', label: 'Light', icon: Sun },
+  { value: 'dark', label: 'Dark', icon: Moon },
+];
+---
+
+<div role="radiogroup" aria-label="Theme" class="flex w-fit rounded-lg border border-border p-0.5" data-theme-setting>
+  {options.map(({ value, label, icon: Icon }) => (
+    <button
+      type="button"
+      role="radio"
+      aria-checked="false"
+      aria-label={label}
+      title={label}
+      data-value={value}
+      class="tap-target flex size-7 items-center justify-center rounded-md text-muted-foreground outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring aria-checked:bg-muted aria-checked:text-foreground"
+    >
+      <Icon class="size-3.5" aria-hidden="true" />
+    </button>
+  ))}
+</div>
+
+<script>
+  import { getTheme, setTheme, type ThemeChoice } from '../lib/theme-client';
+
+  const buttons = document.querySelectorAll<HTMLButtonElement>('[data-theme-setting] [role="radio"]');
+  const sync = () => {
+    const current = getTheme();
+    for (const button of buttons) button.setAttribute('aria-checked', String(button.dataset.value === current));
+  };
+  for (const button of buttons) {
+    button.addEventListener('click', () => setTheme(button.dataset.value as ThemeChoice));
+  }
+  document.addEventListener('themechange', sync);
+  sync();
+</script>

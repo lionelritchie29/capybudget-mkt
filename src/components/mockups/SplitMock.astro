@@ -1,0 +1,27 @@
+---
+import { Split } from '@lucide/astro';
+---
+
+<div class="flex flex-col gap-2 text-[13px]">
+  <div class="flex items-center gap-2 rounded-lg border border-border px-3 py-2">
+    <span class="min-w-0 flex-1">
+      <span class="block font-medium">Costco</span>
+      <span class="flex items-center gap-1 text-[11px] text-muted-foreground">
+        <Split class="size-3" /> Split · Nov 12
+      </span>
+    </span>
+    <span class="font-number font-medium tabular-nums">-$214.60</span>
+  </div>
+  <div class="ml-4 flex flex-col border-l border-border pl-3">
+    <span class="flex items-center justify-between py-1.5">
+      <span>Groceries</span>
+      <span class="font-number tabular-nums">-$162.10</span>
+    </span>
+    <span class="flex items-center justify-between py-1.5">
+      <span class="flex items-center gap-1.5">
+        Household <span class="rounded-full bg-onsen-soft px-1.5 py-px text-[11px] text-foreground/80">#reimburse</span>
+      </span>
+      <span class="font-number tabular-nums">-$52.50</span>
+    </span>
+  </div>
+</div>

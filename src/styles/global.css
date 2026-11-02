@@ -1,0 +1,175 @@
+@import 'tailwindcss';
+@import './tokens.css';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Same as the app: hover styles only for mice and trackpads, so a tap never leaves one stuck on. */
+@custom-variant hover {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      @slot;
+    }
+  }
+}
+
+/*
+ * Marketing-only tokens. The app's own tokens (tokens.css) stay a straight copy.
+ * Caramel is the capybara's fur (the app's light theme-color); onsen is the hot-spring blue.
+ * Both are accents for glows, highlights and illustration, never button fills.
+ */
+:root {
+  --brand: #d4895a;
+  --brand-strong: #a8582a;
+  --brand-soft: color-mix(in srgb, #d4895a 14%, transparent);
+  --onsen: #8db8e6;
+  --onsen-soft: color-mix(in srgb, #8db8e6 20%, transparent);
+  --grid-line: color-mix(in srgb, #09090b 5%, transparent);
+  --mock-shadow: 0 1px 2px rgb(0 0 0 / 0.04), 0 12px 32px -8px rgb(0 0 0 / 0.12), 0 32px 64px -24px rgb(0 0 0 / 0.12);
+}
+
+.dark {
+  --brand: #e09a6c;
+  --brand-strong: #eab08a;
+  --brand-soft: color-mix(in srgb, #e09a6c 14%, transparent);
+  --onsen: #7ea9d8;
+  --onsen-soft: color-mix(in srgb, #7ea9d8 14%, transparent);
+  --grid-line: color-mix(in srgb, #f5f0eb 5%, transparent);
+  --mock-shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 12px 32px -8px rgb(0 0 0 / 0.5), 0 32px 64px -24px rgb(0 0 0 / 0.5);
+}
+
+@theme inline {
+  --color-brand: var(--brand);
+  --color-brand-strong: var(--brand-strong);
+  --color-brand-soft: var(--brand-soft);
+  --color-onsen: var(--onsen);
+  --color-onsen-soft: var(--onsen-soft);
+  --shadow-mock: var(--mock-shadow);
+}
+
+/* Cross-document view transitions between / and /features. No JS; browsers without it just navigate. */
+@view-transition {
+  navigation: auto;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    /* Sticky nav height, so in-page anchors don't land under it. */
+    scroll-padding-top: 5rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    @apply bg-background font-sans text-foreground antialiased;
+    font-feature-settings:
+      'rlig' 1,
+      'calt' 1;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply tracking-tight text-balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  th {
+    text-align: left;
+  }
+
+  a,
+  button,
+  input,
+  summary,
+  label {
+    touch-action: manipulation;
+  }
+
+  /* From the app: on phones a control drawn smaller than --tap-min still takes a --tap-min tap. */
+  @media (width < 48rem) {
+    :where([data-slot='button'], .tap-target) {
+      position: relative;
+    }
+    :where([data-slot='button'], .tap-target)::after {
+      content: '';
+      position: absolute;
+      inset-block: min(0px, calc(50% - var(--tap-min) / 2));
+      inset-inline: min(0px, calc(50% - var(--tap-min) / 2));
+    }
+  }
+}
+
+@layer components {
+  /* Faint square grid that fades out toward the edges; sits behind hero and CTA. */
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, black 30%, transparent 75%);
+  }
+
+  /* Soft caramel + onsen glow behind a mockup. */
+  .glow {
+    background:
+      radial-gradient(40% 50% at 30% 40%, var(--brand-soft), transparent 70%),
+      radial-gradient(45% 55% at 72% 55%, var(--onsen-soft), transparent 70%);
+    filter: blur(24px);
+  }
+
+  .eyebrow {
+    @apply inline-flex items-center gap-2 rounded-full border border-border bg-background/70 px-3 py-1 text-xs font-medium text-muted-foreground backdrop-blur;
+  }
+
+  /* Scroll-in reveal. Content is visible by default; only browsers with scroll timelines animate it. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .reveal {
+        animation: reveal linear both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 40%;
+      }
+    }
+  }
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes steam {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(-3px);
+    opacity: 1;
+  }
+}

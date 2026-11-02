@@ -1,0 +1,28 @@
+---
+import { availableTone, formatUsd } from '../../lib/money';
+
+/** The app's AvailablePill (src/components/budget/available-pill.tsx), minus interactivity. */
+interface Props {
+  amount: number;
+  underfunded?: boolean;
+  size?: 'default' | 'lg';
+  class?: string;
+}
+
+const { amount, underfunded = false, size = 'default', class: className } = Astro.props;
+const tone = availableTone(amount, underfunded);
+---
+
+<span
+  class:list={[
+    'inline-flex items-center rounded-full border border-transparent font-number font-medium whitespace-nowrap tabular-nums',
+    size === 'default' ? 'h-5 px-2 text-xs' : 'h-7 px-3 text-sm',
+    tone === 'success' && 'bg-success text-success-foreground',
+    tone === 'warning' && 'bg-warning text-warning-foreground',
+    tone === 'danger' && 'bg-danger text-danger-foreground',
+    tone === 'zero' && 'bg-muted text-foreground/60',
+    className,
+  ]}
+>
+  {formatUsd(amount)}
+</span>

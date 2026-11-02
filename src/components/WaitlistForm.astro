@@ -1,0 +1,143 @@
+---
+import { actions } from 'astro:actions';
+import { ArrowRight, Check } from '@lucide/astro';
+import Button from './ui/Button.astro';
+import type { WaitlistSource } from '../lib/waitlist';
+
+interface Props {
+  source: WaitlistSource;
+  /** Server-rendered result, for the no-JS fallback page. */
+  status?: { kind: 'success' } | { kind: 'error'; message: string };
+  email?: string;
+  class?: string;
+}
+
+const { source, status, email = '', class: className } = Astro.props;
+const inputId = `waitlist-email-${source}`;
+const done = status?.kind === 'success';
+---
+
+<!--
+  Posts to /waitlist (rendered on demand) when JS is off; with JS the script below calls the action
+  and swaps in the result without leaving the page.
+-->
+<form
+  method="POST"
+  action={'/waitlist' + actions.waitlist.join}
+  class:list={['w-full max-w-md', className]}
+  data-waitlist-form
+  data-state={done ? 'success' : 'idle'}
+  novalidate
+>
+  <div class="flex flex-col gap-2 sm:flex-row" data-fields hidden={done}>
+    <label for={inputId} class="sr-only">
+      Email address
+    </label>
+    <input
+      id={inputId}
+      type="email"
+      name="email"
+      required
+      autocomplete="email"
+      inputmode="email"
+      placeholder="you@example.com"
+      value={email}
+      aria-describedby={`${inputId}-status`}
+      class="h-11 w-full min-w-0 rounded-md sm:flex-1 border border-input bg-background px-3.5 text-base shadow-xs transition-colors outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/15 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 sm:text-[0.9375rem]"
+    />
+    <input type="hidden" name="source" value={source} />
+    <input type="hidden" name="referrer" value="" data-referrer />
+    <div class="absolute -left-[9999px] h-px w-px overflow-hidden" aria-hidden="true">
+      <label>
+        Company <input type="text" name="company" tabindex="-1" autocomplete="off" />
+      </label>
+    </div>
+    <Button type="submit" size="lg" data-submit>
+      <span data-label>Join the waitlist</span>
+      <ArrowRight aria-hidden="true" />
+    </Button>
+  </div>
+
+  <p
+    id={`${inputId}-status`}
+    role="status"
+    aria-live="polite"
+    data-status
+    class:list={[
+      'mt-2.5 flex min-h-5 items-center gap-1.5 text-sm',
+      done ? 'font-medium text-success-foreground' : 'text-muted-foreground',
+      status?.kind === 'error' && 'text-danger-foreground',
+    ]}
+  >
+    {done && <Check class="size-4" aria-hidden="true" />}
+    {done
+      ? "You're on the list. Check your inbox for a hello from the capybara."
+      : status?.kind === 'error'
+        ? status.message
+        : 'No spam. One email when your budget is ready.'}
+  </p>
+</form>
+
+<script>
+  import { actions, isInputError } from 'astro:actions';
+
+  const SUCCESS = "You're on the list. Check your inbox for a hello from the capybara.";
+  const CHECK =
+    '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
+
+  for (const form of document.querySelectorAll<HTMLFormElement>('[data-waitlist-form]')) {
+    const input = form.querySelector<HTMLInputElement>('input[type="email"]')!;
+    const fields = form.querySelector<HTMLElement>('[data-fields]')!;
+    const status = form.querySelector<HTMLElement>('[data-status]')!;
+    const submit = form.querySelector<HTMLButtonElement>('[data-submit]')!;
+    const label = form.querySelector<HTMLElement>('[data-label]')!;
+    const referrer = form.querySelector<HTMLInputElement>('[data-referrer]');
+    if (referrer && document.referrer && !document.referrer.startsWith(location.origin)) {
+      referrer.value = document.referrer.slice(0, 500);
+    }
+
+    /** `invalid` marks the field itself; server and network errors aren't the field's fault. */
+    const showError = (message: string, invalid = true) => {
+      if (invalid) input.setAttribute('aria-invalid', 'true');
+      status.className = 'mt-2.5 flex min-h-5 items-center gap-1.5 text-sm text-danger-foreground';
+      status.textContent = message;
+    };
+
+    input.addEventListener('input', () => input.removeAttribute('aria-invalid'));
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (!input.checkValidity()) {
+        showError('Enter a valid email address.');
+        input.focus();
+        return;
+      }
+      submit.setAttribute('aria-disabled', 'true');
+      submit.disabled = true;
+      label.textContent = 'Joining…';
+
+      const result = await actions.waitlist.join(new FormData(form)).catch(() => null);
+
+      submit.removeAttribute('aria-disabled');
+      submit.disabled = false;
+      label.textContent = 'Join the waitlist';
+
+      if (!result) {
+        showError("Couldn't reach the server. Check your connection and try again.", false);
+        return;
+      }
+      const { error } = result;
+      if (error) {
+        if (isInputError(error)) showError(error.fields.email?.[0] ?? 'Enter a valid email address.');
+        else showError(error.message, false);
+        input.focus();
+        return;
+      }
+      form.dataset.state = 'success';
+      fields.hidden = true;
+      status.className = 'mt-2.5 flex min-h-5 items-center gap-1.5 text-sm font-medium text-success-foreground';
+      status.innerHTML = CHECK;
+      status.append(SUCCESS);
+    });
+  }
+</script>

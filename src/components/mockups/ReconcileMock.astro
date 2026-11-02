@@ -1,0 +1,43 @@
+---
+import { CircleCheck, Lock } from '@lucide/astro';
+
+const rows = [
+  { name: 'Whole Foods', amount: '-$84.12', state: 'reconciled' },
+  { name: 'Paycheck', amount: '+$3,200.00', state: 'cleared' },
+  { name: 'Shell', amount: '-$46.30', state: 'uncleared' },
+];
+---
+
+<div class="flex flex-col gap-2.5 text-[13px]">
+  <div class="flex items-center justify-between rounded-lg border border-success-foreground/20 bg-success px-3 py-2">
+    <span>
+      <span class="block text-xs font-medium text-muted-foreground">Checking</span>
+      <span class="font-number font-medium text-success-foreground tabular-nums">$4,182.55</span>
+    </span>
+    <span class="flex items-center gap-1 text-xs font-medium text-success-foreground">
+      <CircleCheck class="size-3.5" /> Matches your bank
+    </span>
+  </div>
+  <ul>
+    {rows.map((row) => (
+      <li class="flex items-center gap-2 border-b border-border/60 py-1.5 last:border-b-0">
+        {row.state === 'reconciled' ? (
+          <Lock class="size-3.5 text-muted-foreground" />
+        ) : (
+          <span
+            class:list={[
+              'flex size-3.5 items-center justify-center rounded-full text-[9px] font-semibold',
+              row.state === 'cleared'
+                ? 'bg-success-foreground text-background'
+                : 'border border-border text-muted-foreground',
+            ]}
+          >
+            C
+          </span>
+        )}
+        <span class="flex-1">{row.name}</span>
+        <span class="font-number tabular-nums">{row.amount}</span>
+      </li>
+    ))}
+  </ul>
+</div>

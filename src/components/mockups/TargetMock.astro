@@ -1,0 +1,28 @@
+---
+import { AlarmClockOff, StickyNote, Target } from '@lucide/astro';
+---
+
+<div class="flex flex-col gap-2.5 text-[13px]">
+  <div class="flex flex-col gap-2 rounded-lg border border-border p-3">
+    <span class="flex items-center gap-1.5 font-medium">
+      <Target class="size-3.5 text-muted-foreground" /> Vacation
+    </span>
+    <span class="text-xs text-muted-foreground">Set aside $500.00 every month</span>
+    <span class="h-1.5 overflow-hidden rounded-full bg-warning">
+      <span class="block h-full w-[72%] rounded-full bg-warning-bar"></span>
+    </span>
+    <span class="flex justify-between text-xs">
+      <span class="font-number tabular-nums">$360.00 assigned</span>
+      <span class="font-medium text-warning-foreground">$140.00 to go</span>
+    </span>
+  </div>
+  <div class="flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-xs">
+    <AlarmClockOff class="size-3.5 text-muted-foreground" />
+    <span class="flex-1">Car insurance</span>
+    <span class="rounded-full bg-muted px-2 py-0.5 text-muted-foreground">Snoozed for November</span>
+  </div>
+  <div class="flex gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
+    <StickyNote class="mt-px size-3.5 shrink-0" />
+    <span>Bali in March. Flights booked, still need the villa.</span>
+  </div>
+</div>

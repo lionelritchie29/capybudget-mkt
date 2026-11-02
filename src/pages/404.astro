@@ -1,0 +1,25 @@
+---
+import { Image } from 'astro:assets';
+import capy from '../assets/capy-icon.png';
+import Base from '../layouts/Base.astro';
+import Button from '../components/ui/Button.astro';
+import { SIGN_IN_URL } from '../lib/site';
+---
+
+<Base title="Page not found" noindex>
+  <section class="mx-auto flex max-w-md flex-col items-center gap-5 px-4 py-24 text-center sm:py-32">
+    <Image src={capy} alt="" width={112} height={112} densities={[1, 2]} />
+    <h1 class="text-3xl font-semibold tracking-tighter">This page went for a soak</h1>
+    <p class="text-muted-foreground">
+      We couldn't find what you were looking for. If you were heading to your budget, it lives at the app now.
+    </p>
+    <div class="flex flex-wrap justify-center gap-2">
+      <Button href="/" size="lg">
+        Back home
+      </Button>
+      <Button href={SIGN_IN_URL} variant="outline" size="lg">
+        Open the app
+      </Button>
+    </div>
+  </section>
+</Base>

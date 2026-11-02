@@ -1,0 +1,44 @@
+---
+import '@fontsource-variable/inter';
+import '../styles/global.css';
+import { Image } from 'astro:assets';
+import capy from '../assets/capy-icon.png';
+import AvailablePill from '../components/mockups/AvailablePill.astro';
+
+// Source for public/og.png (1200×630). Regenerate with `pnpm og` after changing it.
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex" />
+    <title>Capybudget OG image</title>
+  </head>
+  <body class="m-0">
+    <div class="relative isolate flex h-[630px] w-[1200px] items-center overflow-hidden bg-background px-20">
+      <div class="bg-grid absolute inset-0 -z-10"></div>
+      <div class="glow absolute top-10 right-0 -z-10 h-[520px] w-[640px]"></div>
+      <div class="flex max-w-[640px] flex-col gap-7">
+        <span class="flex items-center gap-3 text-3xl font-semibold tracking-tight">
+          <Image src={capy} alt="" width={56} height={56} densities={[1, 2]} /> Capybudget
+        </span>
+        <h1 class="text-[76px] leading-[1.02] font-semibold tracking-tighter">
+          Give every dollar a job.{' '}
+          <span class="bg-linear-to-r from-brand-strong via-brand to-onsen bg-clip-text text-transparent">
+            Then relax.
+          </span>
+        </h1>
+        <span class="text-2xl text-muted-foreground">Calm envelope budgeting · capybudget.site</span>
+      </div>
+      <div class="ml-auto flex flex-col items-center gap-6">
+        <Image src={capy} alt="" width={340} height={340} densities={[1, 2]} class="drop-shadow-xl" />
+        <div class="flex gap-2">
+          <AvailablePill amount={187.82} size="lg" class="h-9 px-4 text-lg" />
+          <AvailablePill amount={1450} underfunded size="lg" class="h-9 px-4 text-lg" />
+          <AvailablePill amount={-21.4} size="lg" class="h-9 px-4 text-lg" />
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

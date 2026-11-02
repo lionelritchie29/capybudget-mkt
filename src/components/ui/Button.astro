@@ -1,0 +1,43 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+/** Ported from the app's shadcn button (src/components/ui/button.tsx): same variants, plus a roomier `lg` for marketing CTAs. */
+const variants = {
+  default: 'bg-primary text-primary-foreground hover:bg-primary/90',
+  outline: 'border-border bg-background shadow-xs hover:bg-muted hover:text-foreground',
+  ghost: 'hover:bg-muted hover:text-foreground',
+  link: 'text-primary underline-offset-4 hover:underline',
+};
+
+const sizes = {
+  default: 'h-(--control-h) gap-(--control-gap) px-(--control-px) text-(length:--control-text)',
+  sm: 'h-(--control-h-sm) gap-(--control-gap-sm) px-(--control-px-sm) text-(length:--control-text-sm)',
+  lg: 'h-11 gap-2 px-5 text-[0.9375rem]',
+  icon: 'size-(--control-h)',
+};
+
+type Props = (HTMLAttributes<'a'> | HTMLAttributes<'button'>) & {
+  variant?: keyof typeof variants;
+  size?: keyof typeof sizes;
+  href?: string;
+};
+
+const { variant = 'default', size = 'default', href, class: className, ...rest } = Astro.props;
+
+const classes = [
+  "inline-flex shrink-0 items-center justify-center rounded-md border border-transparent bg-clip-padding font-medium whitespace-nowrap transition-colors outline-none select-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-(--control-icon)",
+  variants[variant],
+  sizes[size],
+  className,
+];
+---
+
+{href ? (
+  <a href={href} class:list={classes} data-slot="button" {...(rest as HTMLAttributes<'a'>)}>
+    <slot />
+  </a>
+) : (
+  <button class:list={classes} data-slot="button" {...(rest as HTMLAttributes<'button'>)}>
+    <slot />
+  </button>
+)}

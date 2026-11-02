@@ -1,0 +1,37 @@
+---
+/**
+ * Window chrome around an HTML mockup. The mockup is a picture of the app, so it is one image to
+ * assistive tech (role="img" + label) and its contents are hidden from it.
+ */
+interface Props {
+  label: string;
+  /** Text in the fake address bar; omit for a chromeless card. */
+  url?: string;
+  class?: string;
+}
+
+const { label, url, class: className } = Astro.props;
+---
+
+<div
+  role="img"
+  aria-label={label}
+  class:list={['overflow-hidden rounded-xl border border-border bg-card text-card-foreground shadow-mock', className]}
+>
+  {url && (
+    <div class="flex h-9 items-center gap-3 border-b border-border bg-sidebar px-3.5" aria-hidden="true">
+      <div class="flex gap-1.5">
+        <span class="size-2.5 rounded-full bg-border" />
+        <span class="size-2.5 rounded-full bg-border" />
+        <span class="size-2.5 rounded-full bg-border" />
+      </div>
+      <div class="mx-auto flex h-5.5 w-full max-w-64 items-center justify-center rounded-md bg-muted px-3 text-[11px] text-muted-foreground">
+        {url}
+      </div>
+      <div class="w-10.5" />
+    </div>
+  )}
+  <div aria-hidden="true" inert>
+    <slot />
+  </div>
+</div>
