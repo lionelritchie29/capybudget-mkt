@@ -194,7 +194,7 @@ const en: DemoBudget = {
   duplicates: { payee: 'Uber', count: 3 },
 };
 
-/** A Jakarta household: one salary on the 1st, a rented house, token electricity, Gojek rides. */
+/** An Indonesian household: one salary on the 1st, a rented house, token electricity, Gojek rides. */
 const id: DemoBudget = {
   currency: 'IDR',
   name: 'Keluarga',
@@ -230,7 +230,7 @@ const id: DemoBudget = {
   selected: {
     group: 'Tabungan',
     name: 'Liburan',
-    note: 'Labuan Bajo bulan Maret. Tiket pesawat udah aman, tinggal cari penginapan.',
+    note: 'Labuan Bajo bulan Maret. Tiket pesawat sudah aman, tinggal cari penginapan.',
   },
   highlights: { funded: 'Belanja dapur', overspent: 'Makan di luar' },
   accountSections: [
@@ -259,7 +259,7 @@ const id: DemoBudget = {
       date: '13/11/2026',
       payee: 'Superindo',
       category: 'Sehari-hari: Rumah tangga',
-      memo: '[reimburse] Alas kursi kantor',
+      memo: '[klaim] Alas kursi kantor',
       outflow: 215_000,
       state: 'uncleared',
       split: true,
@@ -268,7 +268,7 @@ const id: DemoBudget = {
       date: '12/11/2026',
       payee: 'Sate Khas Senayan',
       category: 'Sehari-hari: Makan di luar',
-      memo: 'Ultah Sari',
+      memo: 'Ulang tahun Made',
       outflow: 420_000,
       state: 'cleared',
     },
@@ -289,10 +289,22 @@ const id: DemoBudget = {
       inflow: 15_000_000,
       state: 'reconciled',
     },
-    { date: '01/11/2026', payee: 'Bu Ratna', category: 'Tagihan: Sewa rumah', outflow: 4_500_000, state: 'reconciled' },
+    {
+      date: '01/11/2026',
+      payee: 'Ratna Siregar',
+      category: 'Tagihan: Sewa rumah',
+      outflow: 4_500_000,
+      state: 'reconciled',
+    },
   ],
   upcoming: [
-    { date: '01/12/2026', payee: 'Bu Ratna', category: 'Tagihan: Sewa rumah', outflow: 4_500_000, every: 'Bulanan' },
+    {
+      date: '01/12/2026',
+      payee: 'Ratna Siregar',
+      category: 'Tagihan: Sewa rumah',
+      outflow: 4_500_000,
+      every: 'Bulanan',
+    },
     {
       date: '01/12/2026',
       payee: 'Transfer: Jago',
@@ -313,13 +325,13 @@ const id: DemoBudget = {
     cleared: 9_182_000,
     uncleared: -932_000,
     working: 8_250_000,
-    reconciled: 'Direkonsiliasi 3 hari lalu',
+    reconciled: 'Terakhir direkonsiliasi 3 hari lalu',
   },
   moves: [
-    { kind: 'removed', amount: 135_000, side: 'dari', category: 'Belanja dapur', when: '5 mnt lalu' },
-    { kind: 'assigned', amount: 135_000, side: 'ke', category: 'Makan di luar', when: '5 mnt lalu' },
-    { kind: 'assigned', amount: 1_000_000, side: 'ke', category: 'Liburan', when: '1 Nov, 09.10' },
-    { kind: 'assigned', amount: 4_500_000, side: 'ke', category: 'Sewa rumah', when: '1 Nov, 09.08' },
+    { kind: 'removed', amount: 135_000, side: 'dari', category: 'Belanja dapur', when: '5 menit lalu' },
+    { kind: 'assigned', amount: 135_000, side: 'ke', category: 'Makan di luar', when: '5 menit lalu' },
+    { kind: 'assigned', amount: 1_000_000, side: 'ke', category: 'Liburan', when: '1 Nov 09.10' },
+    { kind: 'assigned', amount: 4_500_000, side: 'ke', category: 'Sewa rumah', when: '1 Nov 09.08' },
   ],
   edit: {
     payee: 'Sate Khas Senayan',
@@ -328,13 +340,13 @@ const id: DemoBudget = {
     fromCategory: 'Sehari-hari: Belanja dapur',
     toCategory: 'Sehari-hari: Makan di luar',
   },
-  reportRange: { preset: '6 bulan terakhir', label: 'Jun 2026 – Nov 2026', months: 6 },
+  reportRange: { preset: '6 bulan terakhir', label: 'Juni sampai November 2026', months: 6 },
   spending: [
     { name: 'Tagihan', amount: 33_450_000, color: 'var(--chart-1)' },
     { name: 'Sehari-hari', amount: 24_615_000, color: 'var(--chart-2)' },
     { name: 'Hiburan', amount: 4_830_000, color: 'var(--chart-3)' },
     { name: 'Kesehatan', amount: 2_275_000, color: 'var(--chart-4)' },
-    { name: 'Kondangan', amount: 1_750_000, color: 'var(--chart-5)' },
+    { name: 'Hadiah', amount: 1_750_000, color: 'var(--chart-5)' },
     { name: 'Liburan', amount: 1_180_000, color: 'var(--chart-6)' },
   ],
   duplicates: { payee: 'Gojek', count: 3 },
