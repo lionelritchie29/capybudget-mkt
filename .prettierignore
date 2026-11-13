@@ -3,3 +3,5 @@ dist
 .astro
 .vercel
 node_modules
+# Vendored verbatim from https://gist.github.com/orepras/3e1ca8974fc51d11825f142fa6a66635
+.cursor/skills/bahasa-indonesia-plain/SKILL.md
