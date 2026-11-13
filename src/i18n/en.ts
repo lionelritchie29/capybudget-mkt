@@ -22,8 +22,8 @@ const en = {
       { href: '/#faq', label: 'FAQ' },
     ],
     signIn: 'Sign in',
-    /** "Join the waitlist", with the middle part dropped on phones. */
-    join: { before: 'Join', optional: ' the', after: ' waitlist' },
+    /** "Join the waitlist", with the middle part dropped below the `optionalFrom` breakpoint. */
+    join: { before: 'Join', optional: ' the', after: ' waitlist', optionalFrom: 'sm' as 'sm' | 'lg' },
     menu: 'Menu',
   },
   /** The switcher points at the other language, so its text is written in that language. */

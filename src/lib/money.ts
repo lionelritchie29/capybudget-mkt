@@ -1,6 +1,6 @@
 export type Currency = 'USD' | 'IDR';
 
-/** Same shapes as the app: USD as "$1,234.56", IDR (zero-decimal) as "Rp 1.234.567". */
+/** USD as "$1,234.56" like the app; IDR (zero-decimal) as "Rp1.234.567", with no space as EYD writes it. */
 const formats: Record<Currency, Intl.NumberFormat> = {
   USD: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }),
   IDR: new Intl.NumberFormat('id-ID', {
@@ -16,14 +16,16 @@ const shortFormats: Record<Currency, Intl.NumberFormat> = {
   IDR: formats.IDR,
 };
 
+const tidy = (text: string, currency: Currency) => (currency === 'IDR' ? text.replace(/Rp\s+/u, 'Rp') : text);
+
 /** Mockup amounts are plain numbers in currency units (12.5 → $12.50). Negatives keep the sign up front. */
 export function formatMoney(amount: number, currency: Currency): string {
-  return formats[currency].format(amount);
+  return tidy(formats[currency].format(amount), currency);
 }
 
 /** For prose such as aria-labels, where "$640" reads better than "$640.00". */
 export function formatMoneyShort(amount: number, currency: Currency): string {
-  return shortFormats[currency].format(amount);
+  return tidy(shortFormats[currency].format(amount), currency);
 }
 
 export type Tone = 'success' | 'warning' | 'danger' | 'zero';

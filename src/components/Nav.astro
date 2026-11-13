@@ -30,7 +30,7 @@ const languages = LOCALES.filter((l) => l !== locale).map((l) => ({
           <a
             href={localize(href)}
             aria-current={localize(href) === path ? 'page' : undefined}
-            class="rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring aria-[current=page]:text-foreground"
+            class="rounded-md px-3 py-2 text-sm whitespace-nowrap text-muted-foreground transition-colors outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring aria-[current=page]:text-foreground"
           >
             {label}
           </a>
@@ -60,7 +60,11 @@ const languages = LOCALES.filter((l) => l !== locale).map((l) => ({
       <ThemeToggle />
       <Button href={waitlistHref}>
         {t.nav.join.before}
-        {t.nav.join.optional && <span class="max-sm:hidden">{t.nav.join.optional}</span>}
+        {t.nav.join.optional && (
+          <span class:list={[t.nav.join.optionalFrom === 'lg' ? 'max-lg:hidden' : 'max-sm:hidden']}>
+            {t.nav.join.optional}
+          </span>
+        )}
         {t.nav.join.after}
       </Button>
 
